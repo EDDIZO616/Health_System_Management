@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Health Systems Management – Comprehensive Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0D1B2A;
+    --navy2: #132338;
+    --navy3: #1a2e47;
+    --teal: #00C9A7;
+    --teal2: #00a88c;
+    --gold: #FFD166;
+    --coral: #FF6B6B;
+    --lavender: #A78BFA;
+    --sky: #38BDF8;
+    --text: #E8F4F8;
+    --muted: #94A3B8;
+    --border: rgba(0,201,167,0.18);
+    --card: #132338;
+    --card2: #1a2e47;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* PROGRESS BAR */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    width: 0%; z-index: 9999; transition: width 0.1s;
+  }
+
+  /* ANIMATED HERO */
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #0f3d5c 0%, var(--navy) 70%);
+  }
+  .hero-canvas {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+  }
+  .hero-eyebrow {
+    font-family: 'Sora', sans-serif; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 20px;
+    background: rgba(0,201,167,0.1); border: 1px solid var(--border);
+    padding: 6px 18px; border-radius: 100px; display: inline-block;
+  }
+  .hero h1 {
+    font-family: 'Sora', sans-serif; font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, var(--text) 0%, var(--teal) 60%, var(--gold) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 20px; max-width: 820px;
+  }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--muted); max-width: 600px; margin-bottom: 36px;
+  }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 44px; }
+  .hero-tags span {
+    font-size: 0.78rem; font-weight: 500; padding: 5px 14px;
+    border-radius: 100px; border: 1px solid;
+  }
+  .t-teal { border-color: var(--teal); color: var(--teal); background: rgba(0,201,167,0.08); }
+  .t-gold { border-color: var(--gold); color: var(--gold); background: rgba(255,209,102,0.08); }
+  .t-coral { border-color: var(--coral); color: var(--coral); background: rgba(255,107,107,0.08); }
+  .t-lav { border-color: var(--lavender); color: var(--lavender); background: rgba(167,139,250,0.08); }
+  .t-sky { border-color: var(--sky); color: var(--sky); background: rgba(56,189,248,0.08); }
+
+  .pulse-ring {
+    position: absolute; border-radius: 50%; border: 1px solid rgba(0,201,167,0.15);
+    animation: pulseRing 4s ease-out infinite;
+    pointer-events: none;
+  }
+  .pulse-ring:nth-child(1) { width: 200px; height: 200px; bottom: 10%; right: 8%; animation-delay: 0s; }
+  .pulse-ring:nth-child(2) { width: 350px; height: 350px; bottom: 10%; right: 8%; animation-delay: 1s; }
+  .pulse-ring:nth-child(3) { width: 500px; height: 500px; bottom: 10%; right: 8%; animation-delay: 2s; }
+  @keyframes pulseRing { 0% { transform: scale(0.85); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+
+  /* STICKY NAV */
+  #sticky-nav {
+    position: fixed; top: 3px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; background: rgba(13,27,42,0.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 10px 20px; display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+    max-width: calc(100vw - 32px);
+    transition: opacity 0.3s;
+  }
+  #sticky-nav a {
+    color: var(--muted); text-decoration: none; font-size: 0.72rem; font-weight: 500;
+    padding: 5px 11px; border-radius: 8px; transition: all 0.2s; white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+  #sticky-nav a:hover, #sticky-nav a.active { color: var(--teal); background: rgba(0,201,167,0.1); }
+
+  /* DARK/LIGHT TOGGLE */
+  .theme-btn {
+    position: fixed; bottom: 28px; right: 24px; z-index: 1001;
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4); transition: all 0.2s;
+  }
+  .theme-btn:hover { background: var(--teal); color: var(--navy); }
+
+  /* MAIN LAYOUT */
+  main { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 56px; scroll-margin-top: 80px;
+    border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+    background: var(--card); box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 24px 28px; cursor: pointer;
+    background: linear-gradient(90deg, var(--card2) 0%, var(--card) 100%);
+    border-bottom: 1px solid var(--border); user-select: none;
+    transition: background 0.2s;
+  }
+  .section-header:hover { background: linear-gradient(90deg, #1f3555 0%, var(--card2) 100%); }
+  .section-num {
+    font-family: 'Sora', sans-serif; font-size: 0.68rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 100px; min-width: 40px; text-align: center; flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-family: 'Sora', sans-serif; font-size: 1.15rem; font-weight: 700; flex: 1;
+  }
+  .section-chevron {
+    font-size: 0.8rem; color: var(--muted); transition: transform 0.3s; flex-shrink: 0;
+  }
+  .section.open .section-chevron { transform: rotate(180deg); }
+  .section-body { display: none; padding: 28px; }
+  .section.open .section-body { display: block; }
+
+  /* ACCENT COLOURS PER SECTION */
+  .s1 .section-num { background: rgba(0,201,167,0.15); color: var(--teal); }
+  .s1 .section-header h2 { color: var(--teal); }
+  .s2 .section-num { background: rgba(255,209,102,0.15); color: var(--gold); }
+  .s2 .section-header h2 { color: var(--gold); }
+  .s3 .section-num { background: rgba(255,107,107,0.15); color: var(--coral); }
+  .s3 .section-header h2 { color: var(--coral); }
+  .s4 .section-num { background: rgba(167,139,250,0.15); color: var(--lavender); }
+  .s4 .section-header h2 { color: var(--lavender); }
+  .s5 .section-num { background: rgba(56,189,248,0.15); color: var(--sky); }
+  .s5 .section-header h2 { color: var(--sky); }
+  .s6 .section-num { background: rgba(0,201,167,0.15); color: var(--teal); }
+  .s6 .section-header h2 { color: var(--teal); }
+  .s7 .section-num { background: rgba(255,209,102,0.15); color: var(--gold); }
+  .s7 .section-header h2 { color: var(--gold); }
+  .s8 .section-num { background: rgba(255,107,107,0.15); color: var(--coral); }
+  .s8 .section-header h2 { color: var(--coral); }
+
+  /* TYPOGRAPHY */
+  h3 {
+    font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700;
+    color: var(--text); margin: 28px 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h4 {
+    font-family: 'Sora', sans-serif; font-size: 0.9rem; font-weight: 600;
+    color: var(--teal); margin: 20px 0 8px;
+  }
+  p { color: #BFD9EE; margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; color: #BFD9EE; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 12px; padding: 16px 20px; margin: 18px 0;
+    font-size: 0.93rem; border-left: 3px solid;
+  }
+  .callout-teal { background: rgba(0,201,167,0.08); border-color: var(--teal); }
+  .callout-gold { background: rgba(255,209,102,0.08); border-color: var(--gold); }
+  .callout-coral { background: rgba(255,107,107,0.08); border-color: var(--coral); }
+  .callout-lav { background: rgba(167,139,250,0.08); border-color: var(--lavender); }
+  .callout-sky { background: rgba(56,189,248,0.08); border-color: var(--sky); }
+  .callout-title { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .callout-teal .callout-title { color: var(--teal); }
+  .callout-gold .callout-title { color: var(--gold); }
+  .callout-coral .callout-title { color: var(--coral); }
+  .callout-lav .callout-title { color: var(--lavender); }
+  .callout-sky .callout-title { color: var(--sky); }
+
+  /* TABLES */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th {
+    background: rgba(0,201,167,0.1); color: var(--teal);
+    font-family: 'Sora', sans-serif; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border);
+  }
+  td { padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #BFD9EE; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* BADGE GRID */
+  .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+  .badge-card {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; transition: transform 0.2s;
+  }
+  .badge-card:hover { transform: translateY(-2px); }
+  .badge-card .icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .badge-card h5 { font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .badge-card p { font-size: 0.8rem; margin: 0; color: var(--muted); }
+
+  /* THEORY CARDS */
+  .theory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  @media(max-width:600px){ .theory-grid { grid-template-columns: 1fr; } }
+  .theory-card {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+  }
+  .theory-card h5 { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; }
+  .theory-card ul { font-size: 0.83rem; padding-left: 18px; }
+  .t-era { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+
+  /* STEPS */
+  .steps { counter-reset: step; margin: 14px 0; }
+  .step { display: flex; gap: 16px; margin-bottom: 14px; align-items: flex-start; }
+  .step-num {
+    counter-increment: step;
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(0,201,167,0.15); border: 1px solid var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Sora', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--teal);
+  }
+  .step-content h5 { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; }
+  .step-content p { font-size: 0.85rem; margin: 0; color: var(--muted); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* EXAM TIPS */
+  .tip-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 14px 0; }
+  @media(max-width:700px){ .tip-grid { grid-template-columns: 1fr; } }
+  .tip-card {
+    background: var(--card2); border-radius: 12px; padding: 18px;
+    border-top: 3px solid;
+  }
+  .tip-card:nth-child(1) { border-color: var(--teal); }
+  .tip-card:nth-child(2) { border-color: var(--gold); }
+  .tip-card:nth-child(3) { border-color: var(--lavender); }
+  .tip-card h5 { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; }
+  .tip-card ul { font-size: 0.82rem; color: var(--muted); padding-left: 18px; }
+
+  /* TOC */
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0 32px; }
+  @media(max-width:600px){ .toc-grid { grid-template-columns: 1fr; } }
+  .toc-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+    border: 1px solid var(--border); border-radius: 10px; text-decoration: none;
+    color: var(--text); background: var(--card2); transition: all 0.2s; font-size: 0.88rem;
+  }
+  .toc-item:hover { border-color: var(--teal); background: rgba(0,201,167,0.06); color: var(--teal); }
+  .toc-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .toc-item span { font-size: 0.68rem; color: var(--muted); display: block; }
+
+  /* QUICK-FACT STRIP */
+  .fact-strip {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0;
+  }
+  .fact-pill {
+    background: rgba(0,201,167,0.08); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 16px; font-size: 0.8rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .fact-pill b { color: var(--teal); }
+
+  /* QUOTE BLOCK */
+  .quote-block {
+    border-left: 3px solid var(--gold); padding: 14px 20px;
+    background: rgba(255,209,102,0.06); border-radius: 0 10px 10px 0;
+    margin: 18px 0; font-style: italic; color: #d4c078; font-size: 0.95rem;
+  }
+
+  /* LIGHT MODE */
+  body.light {
+    --navy: #f0f6ff; --navy2: #e2edf8; --navy3: #d5e5f5;
+    --card: #ffffff; --card2: #eaf2fb; --text: #0d1b2a;
+    --muted: #4a6280; --border: rgba(0,100,160,0.18);
+    background: var(--navy); color: var(--text);
+  }
+  body.light p, body.light li, body.light td { color: #2a4a6b; }
+  body.light h3 { color: #0d1b2a; }
+  body.light .toc-item { color: #0d1b2a; }
+  body.light .hero { background: radial-gradient(ellipse 80% 60% at 50% 0%, #c3ddf5 0%, #f0f6ff 70%); }
+  body.light .hero h1 { -webkit-text-fill-color: unset; color: #0d1b2a; background: none; }
+  body.light #sticky-nav { background: rgba(240,246,255,0.92); }
+  body.light .fact-pill { background: rgba(0,120,190,0.08); }
+  body.light .quote-block { color: #7a6000; background: rgba(255,209,102,0.12); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 7px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--navy3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- STICKY NAV -->
+<nav id="sticky-nav">
+  <a href="#hero">🏠 Home</a>
+  <a href="#s1">1 · Intro</a>
+  <a href="#s2">2 · Managers</a>
+  <a href="#s3">3 · Theories</a>
+  <a href="#s4">4 · Policy</a>
+  <a href="#s5">5 · HRM</a>
+  <a href="#s6">6 · Finance</a>
+  <a href="#s7">7 · TQM</a>
+  <a href="#s8">8 · Exam Tips</a>
+</nav>
+
+<button class="theme-btn" id="themeBtn" title="Toggle light/dark">🌙</button>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="hero-eyebrow">MML · Maseno University School of Medicine</div>
+  <h1>Health Systems Management</h1>
+  <p class="hero-sub">Comprehensive exam study guide covering all lecture units — from management theories to Total Quality Management. Designed to help you walk into that exam room with confidence.</p>
+  <div class="hero-tags">
+    <span class="t-teal">📋 WHO Building Blocks</span>
+    <span class="t-gold">⚙️ Management Theories</span>
+    <span class="t-coral">👥 Human Resources</span>
+    <span class="t-lav">🏦 Financial Management</span>
+    <span class="t-sky">✅ TQM & Quality</span>
+  </div>
+</section>
+
+<main>
+  <!-- TOC -->
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item"><span class="toc-icon">🏥</span><div><strong>1. Introduction to HSM</strong><span>Definition, WHO building blocks, 5 pillars</span></div></a>
+    <a href="#s2" class="toc-item"><span class="toc-icon">👔</span><div><strong>2. The Need for Managers</strong><span>Why & what managers do in healthcare</span></div></a>
+    <a href="#s3" class="toc-item"><span class="toc-icon">⚙️</span><div><strong>3. Management Theories</strong><span>Classical, Human Relations, Socio-technical</span></div></a>
+    <a href="#s4" class="toc-item"><span class="toc-icon">📜</span><div><strong>4. Health Policy & Strategy</strong><span>Policy cycle, change models, devolution</span></div></a>
+    <a href="#s5" class="toc-item"><span class="toc-icon">👥</span><div><strong>5. Human Resource Management</strong><span>Recruitment, retention, performance</span></div></a>
+    <a href="#s6" class="toc-item"><span class="toc-icon">💰</span><div><strong>6. Financial Management & UHC</strong><span>Budgeting, financing, UHC dimensions</span></div></a>
+    <a href="#s7" class="toc-item"><span class="toc-icon">✅</span><div><strong>7. Total Quality Management</strong><span>TQM principles, CQI, patient satisfaction</span></div></a>
+    <a href="#s8" class="toc-item"><span class="toc-icon">📝</span><div><strong>8. Summary & Exam Tips</strong><span>Quick revision tables & PEEL strategy</span></div></a>
+  </div>
+
+  <!-- ===== SECTION 1 ===== -->
+  <div class="section s1 open" id="s1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">01</div>
+      <h2>Introduction to Health Systems Management</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>1.1 What is Health Systems Management?</h3>
+      <p><strong>Health Systems Management (HSM)</strong> describes the leadership and general management of hospitals, hospital networks, and healthcare systems. It involves the <strong>planning, organization, and monitoring</strong> of healthcare resources and services to efficiently meet population needs.</p>
+      <p>A health service manager is responsible for the provision of local healthcare through the management of hospital, general practitioner (GP), and community health services. Managers liaise with clinical and non-clinical staff and other partner organizations while considering the demands of political policy and local circumstances.</p>
+
+      <h3>1.2 Key Definitions</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>System</strong></td><td>A collection of components that work together to achieve a common objective</td></tr>
+            <tr><td><strong>Health System</strong></td><td>The sum of the organizations, institutions, and resources whose shared primary purpose is to improve health (WHO)</td></tr>
+            <tr><td><strong>Health Information System</strong></td><td>A system that integrates data collection, processing, reporting, and use of information necessary for improving health service effectiveness and efficiency</td></tr>
+            <tr><td><strong>Health Management Information System</strong></td><td>An information system specially designed to assist in the management and planning of health programmes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>1.3 The WHO Health System Building Blocks</h3>
+      <p>The World Health Organization (WHO) framework identifies <strong>six fundamental building blocks</strong> that constitute a health system:</p>
+      <div class="badge-grid">
+        <div class="badge-card"><div class="icon">🏨</div><h5>Service Delivery</h5><p>Effective, safe, quality health services</p></div>
+        <div class="badge-card"><div class="icon">👩‍⚕️</div><h5>Health Workforce</h5><p>Responsive, fair, and efficient health workers</p></div>
+        <div class="badge-card"><div class="icon">📊</div><h5>Health Information Systems</h5><p>Reliable data for decision-making</p></div>
+        <div class="badge-card"><div class="icon">💊</div><h5>Medical Products, Vaccines & Technologies</h5><p>Access to essential medicines</p></div>
+        <div class="badge-card"><div class="icon">💳</div><h5>Health Financing</h5><p>Adequate funds; protection from financial hardship</p></div>
+        <div class="badge-card"><div class="icon">🏛️</div><h5>Leadership & Governance (Stewardship)</h5><p>Strategic policy frameworks, regulation, accountability</p></div>
+      </div>
+
+      <div class="callout callout-teal">
+        <div class="callout-title">🔑 Exam Memory Hook</div>
+        Remember the WHO 6 Building Blocks as: <strong>S-H-I-M-F-L</strong> — <em>Service Delivery, Health Workforce, Information Systems, Medical Products, Financing, Leadership/Governance</em>. Or use: <em>"Some Health Issues Mean Financial Loss."</em>
+      </div>
+
+      <h3>1.4 The Five Core Pillars of HSM</h3>
+      <p>Health Systems Management rests on five interconnected pillars:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Pillar</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Leadership/Governance</strong></td><td>Strategic direction, policy development, and accountability structures</td></tr>
+            <tr><td><strong>Health Financing</strong></td><td>Raising and allocating funds for health services</td></tr>
+            <tr><td><strong>Service Delivery</strong></td><td>Organizing and providing effective, safe, quality care</td></tr>
+            <tr><td><strong>Workforce Management</strong></td><td>Recruiting, training, and retaining health workers</td></tr>
+            <tr><td><strong>Health Information Systems</strong></td><td>Data collection, analysis, and use for decision-making</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2 ===== -->
+  <div class="section s2" id="s2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">02</div>
+      <h2>The Need for Managers in Healthcare</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>2.1 Why Healthcare Organizations Need Managers</h3>
+      <p>Healthcare is an expansive and complex industry that ranges from preventative care to emergency services, follow-up, and rehabilitation. Healthcare organizations are complex and dynamic, requiring managers to provide <strong>leadership, supervision, and coordination</strong>.</p>
+
+      <h3>2.2 Key Reasons for Management in Healthcare</h3>
+      <div class="badge-grid">
+        <div class="badge-card"><div class="icon">🎯</div><h5>Beyond Individual Capacity</h5><p>Organizations achieve goals beyond any single individual's reach. The scope of healthcare tasks demands collective management.</p></div>
+        <div class="badge-card"><div class="icon">⚡</div><h5>Resource Optimization</h5><p>Managers ensure that organizational tasks are carried out in the best way possible to achieve goals.</p></div>
+        <div class="badge-card"><div class="icon">🧩</div><h5>Resource Adequacy</h5><p>Managers ensure that appropriate financial and human resources are adequate to support the organization.</p></div>
+        <div class="badge-card"><div class="icon">🔗</div><h5>Coordination & Integration</h5><p>Managers coordinate diverse departments and services to work towards common goals.</p></div>
+        <div class="badge-card"><div class="icon">🏅</div><h5>Quality Assurance</h5><p>Managers establish systems to monitor and improve the quality of care.</p></div>
+      </div>
+
+      <h3>2.3 Managerial Roles in Health Services</h3>
+      <p>There is a huge range of managerial roles within health services:</p>
+      <div class="fact-strip">
+        <div class="fact-pill">💰 <b>Finance Management</b></div>
+        <div class="fact-pill">👥 <b>Human Resources Management</b></div>
+        <div class="fact-pill">🩺 <b>Clinical Management</b></div>
+        <div class="fact-pill">👷 <b>Staff Management</b></div>
+        <div class="fact-pill">📋 <b>Project Management</b></div>
+        <div class="fact-pill">🛒 <b>Procurement Management</b></div>
+        <div class="fact-pill">📊 <b>Information Management</b></div>
+        <div class="fact-pill">🏗️ <b>Facilities Management</b></div>
+        <div class="fact-pill">⚙️ <b>Operational Management</b></div>
+      </div>
+
+      <h3>2.4 What Health Systems Management Ensures</h3>
+      <p>Health systems management ensures that:</p>
+      <ul>
+        <li>Specific outcomes are attained</li>
+        <li>Departments within a health facility are running smoothly</li>
+        <li>Right people are in the right jobs</li>
+        <li>People know what is expected of them</li>
+        <li>Resources are used efficiently</li>
+        <li>All departments are working towards a common goal for mutual development and growth</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3 ===== -->
+  <div class="section s3" id="s3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">03</div>
+      <h2>Management Theories & Principles</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>3.1 Overview</h3>
+      <p>Management theories provide frameworks for understanding how organizations function and how to effectively lead people. Over the past 80 years, organization theorists have formulated <strong>three main conceptual frameworks</strong> to examine the relationship between employees and their work environment.</p>
+
+      <h3>3.2 Classical Management Theories</h3>
+
+      <h4>3.2.1 Scientific Management (Taylorism) – 1900–1930</h4>
+      <p><strong>Founder:</strong> Frederick Winslow Taylor</p>
+      <div class="theory-grid">
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--coral)">Core Principles</div>
+          <h5 style="color:var(--text)">Taylorism</h5>
+          <ul>
+            <li>Focus on maximizing task efficiency and production</li>
+            <li>Work environment as a set of conditions for ensuring task performance and controlling employees</li>
+            <li>Little regard for interpersonal issues or individual differences</li>
+            <li>Emphasis on standardization and division of labor</li>
+            <li>"Shop-floor" focus on worker behaviour</li>
+          </ul>
+        </div>
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--sky)">Healthcare Application</div>
+          <h5 style="color:var(--text)">In Practice</h5>
+          <ul>
+            <li>Standardized clinical protocols and procedures</li>
+            <li>Time-and-motion studies in hospital operations</li>
+            <li>Task specialization (nurses, technicians, doctors)</li>
+          </ul>
+          <div class="t-era" style="color:var(--coral); margin-top:12px">Criticisms</div>
+          <ul>
+            <li>Treats workers as interchangeable parts of a machine</li>
+            <li>Neglects human needs and motivation</li>
+            <li>Can lead to employee alienation</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>3.2.2 Administrative Management</h4>
+      <p><strong>Founder:</strong> Henri Fayol</p>
+      <p><strong>Fayol's 14 Principles of Management:</strong></p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Principle</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Division of work</td></tr>
+            <tr><td>2</td><td>Authority and responsibility</td></tr>
+            <tr><td>3</td><td>Discipline</td></tr>
+            <tr><td>4</td><td>Unity of command</td></tr>
+            <tr><td>5</td><td>Unity of direction</td></tr>
+            <tr><td>6</td><td>Subordination of individual interests</td></tr>
+            <tr><td>7</td><td>Remuneration</td></tr>
+            <tr><td>8</td><td>Centralization</td></tr>
+            <tr><td>9</td><td>Scalar chain (hierarchy)</td></tr>
+            <tr><td>10</td><td>Order</td></tr>
+            <tr><td>11</td><td>Equity</td></tr>
+            <tr><td>12</td><td>Stability of tenure</td></tr>
+            <tr><td>13</td><td>Initiative</td></tr>
+            <tr><td>14</td><td>Esprit de corps (team spirit)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Healthcare applications:</strong> Hierarchical hospital structures, clear lines of authority and reporting, departmental organization.</p>
+
+      <h4>3.2.3 Bureaucratic Principles</h4>
+      <p><strong>Founder:</strong> Max Weber</p>
+      <ul>
+        <li>Clear hierarchy of authority</li>
+        <li>Written rules and procedures</li>
+        <li>Division of labour based on specialization</li>
+        <li>Impersonal relationships</li>
+        <li>Career advancement based on merit</li>
+      </ul>
+      <p><strong>Healthcare applications:</strong> Hospital organizational charts, standard operating procedures, credentialing and licensing systems.</p>
+
+      <h3>3.3 Human Relations Approach – 1930–1970</h3>
+      <p><strong>Key Figures:</strong> Elton Mayo, Mary Parker Follett, Abraham Maslow, Douglas McGregor</p>
+
+      <h4>3.3.1 Core Principles</h4>
+      <p>The human relations approach was shaped by concern about employee alienation and the conviction that a narrow focus on productivity could lead to poorer job performance. It emphasizes:</p>
+      <ul>
+        <li>The value of individual and small group relationships</li>
+        <li>Organizational development and quality of work life</li>
+        <li>Social needs, motivation, and behaviour of people within organizations</li>
+      </ul>
+
+      <h4>3.3.2 Maslow's Hierarchy of Needs</h4>
+      <div class="callout callout-lav">
+        <div class="callout-title">Maslow's Hierarchy (bottom → top)</div>
+        <ol>
+          <li><strong>Physiological needs</strong> — Food, water, shelter</li>
+          <li><strong>Safety needs</strong> — Security, stability</li>
+          <li><strong>Love/Belonging needs</strong> — Social connection, team</li>
+          <li><strong>Esteem needs</strong> — Recognition, status</li>
+          <li><strong>Self-actualization</strong> — Reaching full potential</li>
+        </ol>
+      </div>
+
+      <h4>3.3.3 McGregor's Theory X and Theory Y</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Theory X (Traditional)</th><th>Theory Y (Human Relations)</th></tr></thead>
+          <tbody>
+            <tr><td>People dislike work</td><td>People view work as natural</td></tr>
+            <tr><td>Must be coerced/controlled</td><td>Will exercise self-direction</td></tr>
+            <tr><td>Avoid responsibility</td><td>Seek responsibility</td></tr>
+            <tr><td>Need close supervision</td><td>Can be creative and innovative</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>3.3.4 Healthcare Applications of Human Relations</h4>
+      <ul>
+        <li>Patient-centred care approaches</li>
+        <li>Team-based care models</li>
+        <li>Staff engagement and motivation programmes</li>
+        <li>Recognition and reward systems</li>
+        <li>Participative decision-making</li>
+      </ul>
+
+      <h3>3.4 Socio-Technical Approach – 1970s onwards</h3>
+      <p><strong>Key Principle:</strong> Encompasses both the technological/task attributes of a job <em>and</em> the interpersonal and organizational context in which it is performed.</p>
+      <p><strong>Healthcare applications:</strong></p>
+      <ul>
+        <li>Electronic Health Record (EHR) implementation considering staff workflows</li>
+        <li>Balancing technology with human interaction in patient care</li>
+        <li>System redesign that considers both technical and social factors</li>
+      </ul>
+
+      <h3>3.5 Contemporary Management Theories</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Theory</th><th>Key Concept</th><th>Healthcare Application</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Contingency Theory</strong></td><td>No single management style works best; approach depends on situation</td><td>Flexible leadership styles based on department needs</td></tr>
+            <tr><td><strong>Systems Theory</strong></td><td>Organizations as interconnected systems</td><td>WHO building blocks framework</td></tr>
+            <tr><td><strong>Situational Leadership</strong></td><td>Leaders adapt style to follower readiness</td><td>Different approaches for different staff levels</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-gold">
+        <div class="callout-title">📌 Quick Comparison: Classical vs. Human Relations</div>
+        <div class="tbl-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Aspect</th><th>Scientific Management</th><th>Human Relations</th></tr></thead>
+            <tbody>
+              <tr><td>Focus</td><td>Task efficiency</td><td>People and relationships</td></tr>
+              <tr><td>View of Worker</td><td>Economic being</td><td>Social being</td></tr>
+              <tr><td>Motivation</td><td>Financial rewards</td><td>Recognition, belonging</td></tr>
+              <tr><td>Management Style</td><td>Directive, controlling</td><td>Participative, supportive</td></tr>
+              <tr><td>Healthcare Example</td><td>Standardized procedures</td><td>Patient-centred care teams</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4 ===== -->
+  <div class="section s4" id="s4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">04</div>
+      <h2>Health Policy & Strategic Planning</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>4.1 What is Health Policy?</h3>
+      <p><strong>Health policy</strong> refers to decisions, plans, and actions undertaken to achieve specific healthcare goals within a society. It defines a vision for the future and outlines priorities, expected roles of different groups, and the regulatory framework.</p>
+
+      <h3>4.2 The Policy Cycle</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h5>Problem Identification</h5><p>Recognizing health issues that require attention</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h5>Agenda Setting</h5><p>Prioritizing issues for policy action</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h5>Policy Formulation</h5><p>Developing policy options and strategies</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h5>Policy Adoption</h5><p>Formal approval and legitimation</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h5>Policy Implementation</h5><p>Putting policy into practice</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-content"><h5>Policy Evaluation</h5><p>Assessing outcomes and impacts</p></div></div>
+      </div>
+
+      <h3>4.3 Strategic Planning in Healthcare</h3>
+      <p>Strategic planning is the process of defining organizational direction and making decisions on allocating resources to pursue this direction.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Vision</strong></td><td>Where the organization wants to be</td></tr>
+            <tr><td><strong>Mission</strong></td><td>What the organization does and why</td></tr>
+            <tr><td><strong>Goals</strong></td><td>Broad aims</td></tr>
+            <tr><td><strong>Objectives</strong></td><td>Specific, measurable targets (SMART)</td></tr>
+            <tr><td><strong>Strategies</strong></td><td>How objectives will be achieved</td></tr>
+            <tr><td><strong>Action Plans</strong></td><td>Detailed implementation steps</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-lav">
+        <div class="callout-title">💡 SMART Objectives</div>
+        Objectives must be: <strong>S</strong>pecific · <strong>M</strong>easurable · <strong>A</strong>chievable · <strong>R</strong>elevant · <strong>T</strong>ime-bound
+      </div>
+
+      <h3>4.4 Managing Organizational Change</h3>
+      <p>Change is inevitable in healthcare due to: advances in medical technology, changing population health needs, policy reforms, and resource constraints.</p>
+      <h4>Kotter's 8-Step Change Model</h4>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h5>Create urgency</h5><p>Help others see the need for change and the importance of acting immediately</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h5>Form a powerful coalition</h5><p>Assemble a group with enough power to lead the change effort</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h5>Create a vision for change</h5><p>Clarify how the future will be different from the past</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h5>Communicate the vision</h5><p>Use every vehicle possible to communicate the new vision and strategies</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h5>Remove obstacles</h5><p>Empower people to act on the vision and remove barriers</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-content"><h5>Create short-term wins</h5><p>Plan for and create visible performance improvements</p></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-content"><h5>Build on the change</h5><p>Use credibility to change systems, structures, and policies that don't fit the vision</p></div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-content"><h5>Anchor the changes in corporate culture</h5><p>Articulate connections between new behaviors and organizational success</p></div></div>
+      </div>
+
+      <h3>4.5 Devolution of Health Services</h3>
+      <p><strong>Devolution</strong> is the transfer of power and decision-making authority from central to sub-national levels of government.</p>
+      <h4>Key Aspects of Devolution in Health</h4>
+      <ul>
+        <li>Bringing decision-making closer to service delivery</li>
+        <li>Expanding participation in sub-national health management</li>
+        <li>Improving equity and bringing specialized services closer to communities</li>
+      </ul>
+      <h4>Challenges of Devolution</h4>
+      <ul>
+        <li>Complicated and politicized decision-making</li>
+        <li>Planning and budgeting challenges at county/sub-national levels</li>
+        <li>Need for capacity building at local levels</li>
+        <li>Coordination between levels of government</li>
+      </ul>
+      <div class="callout callout-teal">
+        <div class="callout-title">🇰🇪 Kenya Example</div>
+        Kenya adopted a devolved system of government where health services delivery became a function of <strong>47 semi-autonomous county governments</strong>. Devolution represented a concerted attempt to bring decision-making closer to service delivery.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5 ===== -->
+  <div class="section s5" id="s5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">05</div>
+      <h2>Human Resource Management in Healthcare</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>5.1 What is Human Resource Management (HRM)?</h3>
+      <p>HRM in healthcare involves the <strong>recruitment, training, development, and retention</strong> of healthcare professionals. It encompasses all aspects of managing the workforce to ensure high-quality patient care.</p>
+
+      <h3>5.2 Key HRM Functions in Healthcare</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Function</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Workforce Planning</strong></td><td>Forecasting staffing needs</td></tr>
+            <tr><td><strong>Recruitment</strong></td><td>Attracting qualified candidates</td></tr>
+            <tr><td><strong>Selection</strong></td><td>Choosing the right people for the right jobs</td></tr>
+            <tr><td><strong>Training & Development</strong></td><td>Building skills and competencies</td></tr>
+            <tr><td><strong>Performance Management</strong></td><td>Evaluating and improving performance</td></tr>
+            <tr><td><strong>Compensation & Benefits</strong></td><td>Fair remuneration and rewards</td></tr>
+            <tr><td><strong>Employee Relations</strong></td><td>Managing workplace relationships</td></tr>
+            <tr><td><strong>Retention</strong></td><td>Keeping valued employees</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.3 Recruitment Challenges in Healthcare</h3>
+      <p>HR managers face multiple recruitment challenges:</p>
+      <div class="theory-grid">
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--coral)">Recruitment Challenges</div>
+          <ul>
+            <li><strong>Talent shortages</strong> — Limited supply of qualified healthcare professionals</li>
+            <li><strong>Lengthy recruitment processes</strong> — Slow hiring procedures</li>
+            <li><strong>Biased hiring practices</strong> — Unfair selection processes</li>
+            <li><strong>Weak employer branding</strong> — Inability to attract top talent</li>
+          </ul>
+        </div>
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--sky)">Retention Challenges</div>
+          <ul>
+            <li><strong>Poor leadership</strong> — Ineffective management</li>
+            <li><strong>Lack of employee motivation</strong> — Low morale and engagement</li>
+            <li><strong>Inadequate compensation</strong> — Uncompetitive pay and benefits</li>
+            <li><strong>Burnout</strong> — High stress and workload</li>
+            <li><strong>Limited career development</strong> — Few advancement opportunities</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>5.4 Strategies for Improving Retention</h3>
+      <div class="badge-grid">
+        <div class="badge-card"><div class="icon">🏆</div><h5>Reward & Recognition</h5><p>Recognise and reward excellent performance</p></div>
+        <div class="badge-card"><div class="icon">💵</div><h5>Competitive Compensation</h5><p>Competitive pay, benefits and allowances</p></div>
+        <div class="badge-card"><div class="icon">📚</div><h5>Training & Development</h5><p>Continuous learning and skills building</p></div>
+        <div class="badge-card"><div class="icon">⚖️</div><h5>Work-Life Balance</h5><p>Job flexibility and manageable workloads</p></div>
+        <div class="badge-card"><div class="icon">🚀</div><h5>Career Pathways</h5><p>Clear advancement and promotion opportunities</p></div>
+        <div class="badge-card"><div class="icon">🤝</div><h5>Mentorship Programmes</h5><p>Pairing new staff with experienced mentors</p></div>
+        <div class="badge-card"><div class="icon">🌟</div><h5>Strong Workplace Culture</h5><p>Positive, respectful and inclusive environment</p></div>
+        <div class="badge-card"><div class="icon">📢</div><h5>Clear Communication</h5><p>Transparent communication of career advancement</p></div>
+      </div>
+
+      <h3>5.5 Factors Influencing Healthcare Worker Performance</h3>
+      <p>Research has revealed that the following significantly influence staff performance:</p>
+      <ul>
+        <li><strong>Employee remuneration</strong> — Fair pay</li>
+        <li><strong>Management styles</strong> — Leadership approach</li>
+        <li><strong>Recruitment and selection practices</strong> — Quality of hiring</li>
+        <li><strong>Workplace design</strong> — Physical and psychological environment</li>
+      </ul>
+
+      <h3>5.6 Creating a Positive Working Climate</h3>
+      <p>Supportive work environments and strong managerial backing significantly enhance motivation and performance, ultimately improving patient care quality.</p>
+      <div class="fact-strip">
+        <div class="fact-pill">💬 <b>Open Communication</b></div>
+        <div class="fact-pill">🎖️ <b>Respect & Recognition</b></div>
+        <div class="fact-pill">📈 <b>Professional Development</b></div>
+        <div class="fact-pill">🛠️ <b>Adequate Resources</b></div>
+        <div class="fact-pill">🛡️ <b>Safe Working Conditions</b></div>
+        <div class="fact-pill">🤝 <b>Teamwork & Collaboration</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6 ===== -->
+  <div class="section s6" id="s6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">06</div>
+      <h2>Financial Management & Universal Health Coverage</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>6.1 What is Healthcare Financial Management?</h3>
+      <p>Healthcare financial management is concerned with <strong>accounting and budgeting</strong>, along with the related reporting and analysis that make it possible to ensure that the organization's resources are used in the service of its mission, for maximum impact, in compliance with laws and donor requirements, and in accordance with ethical standards.</p>
+
+      <h3>6.2 Key Components</h3>
+      <div class="badge-grid">
+        <div class="badge-card"><div class="icon">📋</div><h5>Budgeting</h5><p>Planning for future financial activities</p></div>
+        <div class="badge-card"><div class="icon">🔍</div><h5>Resource Mobilization</h5><p>Raising funds for health services</p></div>
+        <div class="badge-card"><div class="icon">📊</div><h5>Financial Reporting</h5><p>Tracking and communicating financial performance</p></div>
+        <div class="badge-card"><div class="icon">🔒</div><h5>Internal Controls</h5><p>Safeguarding assets and ensuring accountability</p></div>
+        <div class="badge-card"><div class="icon">🔎</div><h5>Auditing</h5><p>Independent verification of financial records</p></div>
+      </div>
+
+      <h3>6.3 Types of Healthcare Budgets</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Budget Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Operating Budget</strong></td><td>Day-to-day expenses (salaries, supplies, utilities)</td></tr>
+            <tr><td><strong>Capital Budget</strong></td><td>Long-term investments (equipment, facilities)</td></tr>
+            <tr><td><strong>Cash Budget</strong></td><td>Cash flow projections</td></tr>
+            <tr><td><strong>Programme Budget</strong></td><td>Specific programmes or services</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>6.4 Sources of Healthcare Financing</h3>
+      <ul>
+        <li><strong>Government funding</strong> — Tax revenue allocation</li>
+        <li><strong>Health insurance</strong> — Social and private insurance schemes</li>
+        <li><strong>Out-of-pocket payments</strong> — Direct patient payments</li>
+        <li><strong>Donor funding</strong> — International aid and grants</li>
+        <li><strong>Public-private partnerships</strong> — Collaborative financing arrangements</li>
+      </ul>
+
+      <h3>6.5 Universal Health Coverage (UHC)</h3>
+      <div class="callout callout-teal">
+        <div class="callout-title">📖 Definition</div>
+        Universal Health Coverage means that <strong>all people have access to the full range of quality health services they need, when and where they need them, without financial hardship.</strong>
+      </div>
+      <h4>Key Dimensions of UHC</h4>
+      <div class="theory-grid">
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--teal)">Three Dimensions</div>
+          <ul>
+            <li><strong>Population coverage</strong> — Who is covered?</li>
+            <li><strong>Service coverage</strong> — What services are covered?</li>
+            <li><strong>Financial protection</strong> — How much do people pay?</li>
+          </ul>
+        </div>
+        <div class="theory-card">
+          <div class="t-era" style="color:var(--gold)">Requirements for Achieving UHC</div>
+          <ul>
+            <li>Increased funding for the health sector</li>
+            <li>Efficient, equitable, and accountable use of resources</li>
+            <li>Effective public financial management</li>
+            <li>Sustainable financial systems</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>Public Financial Management and UHC</h4>
+      <div class="quote-block">"Achieving UHC requires not only increased funding for the health sector but also the efficient, equitable, and accountable use of resources."</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Principle</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Accountability</strong></td><td>Transparency in resource use</td></tr>
+            <tr><td><strong>Efficiency</strong></td><td>Getting maximum value from resources</td></tr>
+            <tr><td><strong>Equity</strong></td><td>Fair distribution of resources</td></tr>
+            <tr><td><strong>Sustainability</strong></td><td>Long-term financial viability</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>6.6 Financial Management in Practice</h3>
+      <div class="quote-block">"The budget is not just numbers on paper—it is a reflection of our collective commitment to better health outcomes."</div>
+      <p>Effective financial management requires:</p>
+      <ul>
+        <li><strong>Strategic alignment</strong> — Budgets aligned with health priorities</li>
+        <li><strong>Stakeholder engagement</strong> — Involving all relevant parties</li>
+        <li><strong>Monitoring and evaluation</strong> — Tracking financial performance</li>
+        <li><strong>Continuous improvement</strong> — Learning and adapting</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7 ===== -->
+  <div class="section s7" id="s7">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">07</div>
+      <h2>Total Quality Management (TQM)</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>7.1 What is Total Quality Management?</h3>
+      <p><strong>Total Quality Management (TQM)</strong> is a strategic management approach that aims to improve healthcare services by enhancing operational efficiency and ensuring patient satisfaction. TQM in healthcare is a management approach focused on continuously improving the quality of patient care and operational efficiency.</p>
+      <div class="quote-block">"TQM has become a globally recognized strategic management philosophy, focusing on customer satisfaction and fostering a cohesive strategy to enhance organizational performance."</div>
+
+      <h3>7.2 Key Principles of TQM</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Principle</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Customer Focus</strong></td><td>Prioritizing patients as ultimate customers; meeting their needs and enhancing satisfaction</td></tr>
+            <tr><td><strong>Continuous Quality Improvement (CQI)</strong></td><td>Ongoing enhancement of processes, services, and outcomes</td></tr>
+            <tr><td><strong>Employee Involvement</strong></td><td>Participation of all members of the organization</td></tr>
+            <tr><td><strong>Process Orientation</strong></td><td>Systematic process improvements</td></tr>
+            <tr><td><strong>Teamwork</strong></td><td>Collaboration among healthcare providers; interdisciplinary teams working together</td></tr>
+            <tr><td><strong>Data-Driven Decision-Making</strong></td><td>Using evidence and data to guide improvements</td></tr>
+            <tr><td><strong>Long-Term Commitment</strong></td><td>Sustained effort over time</td></tr>
+            <tr><td><strong>Education and Training</strong></td><td>Building capacity for quality</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.3 TQM Best Practices in Healthcare</h3>
+      <p>For TQM implementation in any healthcare setting, the following are considered best practices:</p>
+      <div class="badge-grid">
+        <div class="badge-card"><div class="icon">🎯</div><h5>Top-management commitment</h5><p>Leadership support is essential</p></div>
+        <div class="badge-card"><div class="icon">🤝</div><h5>Teamwork and participation</h5><p>Engaging all staff in quality efforts</p></div>
+        <div class="badge-card"><div class="icon">⚙️</div><h5>Process management</h5><p>Systematic approach to improvement</p></div>
+        <div class="badge-card"><div class="icon">😊</div><h5>Customer focus & satisfaction</h5><p>Patient-centred care at the core</p></div>
+        <div class="badge-card"><div class="icon">📦</div><h5>Resource management</h5><p>Efficient use of all resources</p></div>
+        <div class="badge-card"><div class="icon">🌱</div><h5>Organisation culture</h5><p>Fostering a culture of quality</p></div>
+        <div class="badge-card"><div class="icon">🔄</div><h5>Continuous improvement</h5><p>Ongoing enhancement of services</p></div>
+        <div class="badge-card"><div class="icon">📚</div><h5>Training and education</h5><p>Building staff capabilities</p></div>
+      </div>
+
+      <h3>7.4 Continuous Quality Improvement (CQI)</h3>
+      <p>Continuous Quality Improvement is a core component of TQM that involves:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h5>Identify</h5><p>Systematically identifying areas for improvement</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h5>Implement</h5><p>Implementing changes to enhance processes</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h5>Measure</h5><p>Measuring outcomes to assess effectiveness</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h5>Sustain</h5><p>Sustaining improvements over time</p></div></div>
+      </div>
+      <div class="callout callout-gold">
+        <div class="callout-title">📊 Research Evidence</div>
+        Research shows that <strong>continuous quality improvement positively and significantly predicts patient satisfaction</strong> in healthcare settings.
+      </div>
+
+      <h3>7.5 TQM and Patient Satisfaction</h3>
+      <p>Patient satisfaction is a core determinant of healthcare success and directly reflects the effectiveness of quality improvement measures.</p>
+      <ul>
+        <li>TQM fosters a culture of quality, aligning staff efforts with organizational goals</li>
+        <li>Quality improvement initiatives should be aligned with customer expectations</li>
+        <li>TQM aims to enhance patient satisfaction and outcomes through systematic process improvements</li>
+      </ul>
+
+      <h3>7.6 Measuring Quality in Healthcare</h3>
+      <p>Methods and tools for measuring quality include:</p>
+      <div class="fact-strip">
+        <div class="fact-pill">📏 <b>Quality Indicators</b></div>
+        <div class="fact-pill">📋 <b>Patient Satisfaction Surveys</b></div>
+        <div class="fact-pill">🔍 <b>Clinical Audits</b></div>
+        <div class="fact-pill">📊 <b>Performance Indicators</b></div>
+        <div class="fact-pill">⭐ <b>Standards</b></div>
+      </div>
+
+      <h4>The Structure-Process-Outcome Framework</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Structure</strong></td><td>Resources and organizational characteristics</td></tr>
+            <tr><td><strong>Process</strong></td><td>Activities and interventions</td></tr>
+            <tr><td><strong>Outcome</strong></td><td>Results and impacts on patients</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 8 ===== -->
+  <div class="section s8" id="s8">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-num">08</div>
+      <h2>Summary & Exam Preparation Tips</h2>
+      <div class="section-chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <h3>8.1 Key Takeaways</h3>
+      <ul>
+        <li>Health Systems Management is the leadership and management of healthcare organizations to efficiently meet population health needs.</li>
+        <li>The WHO Building Blocks provide a comprehensive framework for understanding health systems: Service Delivery, Health Workforce, Information, Medical Products, Financing, and Leadership/Governance.</li>
+        <li>Managers are essential in healthcare because organizations are complex and tasks exceed individual capacity.</li>
+        <li>Management theories evolved from Scientific Management (efficiency-focused) through Human Relations (people-focused) to contemporary approaches that consider both.</li>
+        <li>Health Policy and Strategic Planning involve formulating objectives, managing change, and navigating devolution.</li>
+        <li>Human Resource Management addresses recruitment, motivation, retention, and creating a positive working climate.</li>
+        <li>Financial Management ensures resources are used efficiently and effectively toward Universal Health Coverage.</li>
+        <li>Total Quality Management focuses on continuous improvement, patient satisfaction, and a culture of quality.</li>
+      </ul>
+
+      <h3>8.2 Exam Preparation Tips</h3>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <h5>📖 Theory Questions</h5>
+          <ul>
+            <li>Memorize the WHO six building blocks and the five pillars of HSM</li>
+            <li>Understand the evolution of management theories and their healthcare applications</li>
+            <li>Know the key principles of each management approach</li>
+          </ul>
+        </div>
+        <div class="tip-card">
+          <h5>🔬 Application Questions</h5>
+          <ul>
+            <li>Apply theories to real healthcare scenarios</li>
+            <li>Understand devolution and its implications for health services</li>
+            <li>Know strategies for recruitment and retention of health workers</li>
+            <li>Understand the link between financial management and UHC</li>
+          </ul>
+        </div>
+        <div class="tip-card">
+          <h5>✍️ Essay Questions</h5>
+          <ul>
+            <li>Use the PEEL structure (Point, Evidence, Explanation, Link)</li>
+            <li>Integrate examples from the notes</li>
+            <li>Link concepts across different topics (e.g., how HRM supports TQM)</li>
+            <li>Reference the WHO framework as a unifying concept</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-gold">
+        <div class="callout-title">✍️ PEEL Essay Structure</div>
+        <strong>P</strong>oint — State your argument clearly<br>
+        <strong>E</strong>vidence — Provide facts, theories, or examples<br>
+        <strong>E</strong>xplanation — Explain how the evidence supports your point<br>
+        <strong>L</strong>ink — Connect back to the question or to the next point
+      </div>
+
+      <h3>8.3 Quick Revision Tables</h3>
+      <h4>The Five Pillars of HSM</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Pillar</th><th>Key Question</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Leadership/Governance</strong></td><td>Who sets direction?</td></tr>
+            <tr><td><strong>Health Financing</strong></td><td>How is care funded?</td></tr>
+            <tr><td><strong>Service Delivery</strong></td><td>How is care provided?</td></tr>
+            <tr><td><strong>Workforce Management</strong></td><td>Who provides care?</td></tr>
+            <tr><td><strong>Health Information Systems</strong></td><td>How is data used?</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Classical vs. Human Relations – Full Comparison</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Aspect</th><th>Scientific Management</th><th>Human Relations</th></tr></thead>
+          <tbody>
+            <tr><td>Focus</td><td>Task efficiency</td><td>People and relationships</td></tr>
+            <tr><td>View of Worker</td><td>Economic being</td><td>Social being</td></tr>
+            <tr><td>Motivation</td><td>Financial rewards</td><td>Recognition, belonging</td></tr>
+            <tr><td>Management Style</td><td>Directive, controlling</td><td>Participative, supportive</td></tr>
+            <tr><td>Healthcare Example</td><td>Standardized procedures</td><td>Patient-centred care teams</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Management Theories Timeline</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Era</th><th>Theory</th><th>Key Figure</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>1900–1930</td><td>Scientific Management</td><td>F.W. Taylor</td><td>Task efficiency, standardization</td></tr>
+            <tr><td>Early 1900s</td><td>Administrative Management</td><td>Henri Fayol</td><td>14 principles, hierarchy</td></tr>
+            <tr><td>Early 1900s</td><td>Bureaucratic Principles</td><td>Max Weber</td><td>Rules, merit, specialization</td></tr>
+            <tr><td>1930–1970</td><td>Human Relations</td><td>Mayo, Maslow, McGregor</td><td>Motivation, social needs</td></tr>
+            <tr><td>1970s+</td><td>Socio-Technical</td><td>Multiple</td><td>Technology + human context</td></tr>
+            <tr><td>Contemporary</td><td>Contingency / Systems / Situational</td><td>Multiple</td><td>Context-dependent, holistic</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-coral">
+        <div class="callout-title">⚡ Last-Minute Memory Aids</div>
+        <strong>WHO Building Blocks:</strong> "Some Health Issues Mean Financial Loss" (Service Delivery, Health Workforce, Information, Medical Products, Financing, Leadership)<br><br>
+        <strong>Fayol's Principles:</strong> Remember the 14 under DAURDS-COSEIA (Division, Authority, Unity of command, Remuneration, Direction, Subordination, Centralization, Order, Scalar chain, Equity, Initiative, Tenure, Esprit de corps)<br><br>
+        <strong>Kotter's 8 Steps:</strong> "Urgency, Coalition, Vision, Communicate, Remove, Short wins, Build, Anchor"<br><br>
+        <strong>TQM best practices:</strong> TC-PC-ROC (Top mgmt, Customer focus, Process mgmt, Culture, Resource mgmt, Organisation behaviour, Continuous improvement)
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; color: var(--muted); font-size: 0.8rem; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border);">
+    <p>HSM Comprehensive Study Guide · Maseno University School of Medicine</p>
+    <p style="margin-top:4px">Prepared for final exam preparation · Medical Laboratory Sciences</p>
+  </div>
+</main>
+
+<!-- CANVAS ANIMATION -->
+<script>
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+// Active nav
+const sections = document.querySelectorAll('[id^="s"]');
+const navLinks = document.querySelectorAll('#sticky-nav a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+});
+
+// Toggle sections
+function toggleSection(header) {
+  const section = header.parentElement;
+  section.classList.toggle('open');
+}
+
+// Theme toggle
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  themeBtn.textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
+});
+
+// Hero canvas — animated network/pulse dots
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles;
+
+function resize() {
+  W = canvas.width = canvas.offsetWidth;
+  H = canvas.height = canvas.offsetHeight;
+}
+
+function initParticles() {
+  particles = Array.from({length: 55}, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 2.5 + 1,
+    alpha: Math.random() * 0.6 + 0.2
+  }));
+}
+
+function drawFrame() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,201,167,${p.alpha})`;
+    ctx.fill();
+  });
+  // connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 130) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(0,201,167,${0.12 * (1 - dist/130)})`;
+        ctx.lineWidth = 0.8;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawFrame);
+}
+
+window.addEventListener('resize', () => { resize(); initParticles(); });
+resize(); initParticles(); drawFrame();
+</script>
+</body>
+</html>
