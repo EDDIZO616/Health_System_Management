@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSM Comprehensive Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --card: #1a2235;
+    --border: #1e3a5f;
+    --teal: #00c9b1;
+    --teal-dim: #009e8c;
+    --gold: #f5c842;
+    --rose: #ff6b6b;
+    --blue: #4a9eff;
+    --text: #e2e8f0;
+    --muted: #7a8fa6;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background canvas */
+  #bg-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrapper { position: relative; z-index: 1; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, #0d1b38 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,201,177,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--teal);
+    border: 1px solid var(--teal);
+    padding: 4px 14px; border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--teal); font-style: italic; }
+  .hero p { color: var(--muted); font-size: 15px; max-width: 500px; margin: 0 auto 28px; }
+  .hero-stats {
+    display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 2rem; font-weight: 700; color: var(--gold); line-height: 1;
+  }
+  .stat .lbl { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(11,15,26,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .progress-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .progress-bar-bg {
+    flex: 1; height: 6px; background: var(--card);
+    border-radius: 3px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--teal), var(--blue));
+    border-radius: 3px; transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-count { font-size: 12px; color: var(--teal); white-space: nowrap; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 40px 24px 20px;
+    max-width: 860px; margin: 0 auto;
+  }
+  .section-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .icon-mcq { background: linear-gradient(135deg, #0d3b5e, #1a6b8a); }
+  .icon-short { background: linear-gradient(135deg, #2d1b4e, #6b35a8); }
+  .icon-long { background: linear-gradient(135deg, #4e1b1b, #a83535); }
+
+  .section-title-group h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem; color: var(--white); line-height: 1;
+  }
+  .section-title-group p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .divider {
+    height: 1px; background: var(--border);
+    max-width: 860px; margin: 0 auto 8px;
+  }
+
+  /* QUESTION CONTAINER */
+  .questions { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* MCQ CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .q-card:hover { border-color: #2a5580; }
+
+  .q-header {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 18px 20px 14px;
+  }
+  .q-num {
+    font-size: 11px; font-weight: 600; color: var(--teal);
+    letter-spacing: 1px; padding: 3px 8px;
+    background: rgba(0,201,177,0.1);
+    border: 1px solid rgba(0,201,177,0.3);
+    border-radius: 4px; white-space: nowrap; margin-top: 2px;
+  }
+  .q-text { font-size: 14px; line-height: 1.6; color: var(--text); font-weight: 500; }
+
+  .options { padding: 0 20px 6px; display: grid; gap: 6px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer; transition: all 0.15s;
+    background: rgba(255,255,255,0.03);
+    font-size: 13px; line-height: 1.5;
+  }
+  .option:hover { background: rgba(0,201,177,0.06); border-color: rgba(0,201,177,0.2); }
+  .option.correct { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.5); }
+  .option.wrong { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
+  .option.show-correct { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.3); }
+  .opt-letter {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid #2a3a50;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .option.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+  .option.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+  .option.show-correct .opt-letter { background: rgba(34,197,94,0.3); border-color: var(--correct); color: var(--correct); }
+
+  .feedback {
+    margin: 6px 20px 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px; line-height: 1.6;
+    display: none;
+  }
+  .feedback.correct { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; display: block; }
+  .feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; display: block; }
+  .feedback strong { color: inherit; }
+
+  /* SHORT ANSWER CARD */
+  .sa-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .sa-header {
+    background: linear-gradient(90deg, rgba(107,53,168,0.15) 0%, transparent 100%);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sa-num {
+    font-size: 11px; font-weight: 700; color: #a855f7;
+    letter-spacing: 1px; padding: 3px 8px;
+    background: rgba(168,85,247,0.12);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 4px;
+  }
+  .sa-question { font-size: 14px; font-weight: 500; line-height: 1.5; }
+  .sa-body { padding: 16px 20px; }
+  .sa-input {
+    width: 100%; min-height: 80px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid #2a3a50;
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px; line-height: 1.6;
+    padding: 12px 14px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .sa-input:focus { outline: none; border-color: #a855f7; }
+  .reveal-btn {
+    margin-top: 10px;
+    padding: 8px 18px;
+    background: rgba(168,85,247,0.15);
+    border: 1px solid rgba(168,85,247,0.4);
+    border-radius: 6px;
+    color: #c084fc;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .reveal-btn:hover { background: rgba(168,85,247,0.25); }
+  .model-answer {
+    margin-top: 12px;
+    padding: 14px;
+    background: rgba(168,85,247,0.08);
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 8px;
+    font-size: 12px; line-height: 1.7;
+    color: #d8b4fe;
+    display: none;
+  }
+  .model-answer .ma-label {
+    font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: #a855f7;
+    font-weight: 700; margin-bottom: 8px;
+  }
+
+  /* LONG ANSWER CARD */
+  .la-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .la-header {
+    background: linear-gradient(90deg, rgba(168,53,53,0.2) 0%, transparent 100%);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .la-num {
+    font-size: 11px; font-weight: 700; color: #fb923c;
+    letter-spacing: 1px; padding: 3px 8px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.3);
+    border-radius: 4px; white-space: nowrap; margin-top: 2px;
+  }
+  .la-question { font-size: 14px; font-weight: 500; line-height: 1.6; }
+  .la-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .la-body { padding: 16px 20px; }
+  .la-input {
+    width: 100%; min-height: 140px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid #2a3a50;
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px; line-height: 1.6;
+    padding: 12px 14px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .la-input:focus { outline: none; border-color: #fb923c; }
+  .la-reveal-btn {
+    margin-top: 10px;
+    padding: 8px 18px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.35);
+    border-radius: 6px;
+    color: #fdba74;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .la-reveal-btn:hover { background: rgba(251,146,60,0.22); }
+  .la-model-answer {
+    margin-top: 12px;
+    padding: 16px;
+    background: rgba(251,146,60,0.07);
+    border: 1px solid rgba(251,146,60,0.22);
+    border-radius: 8px;
+    font-size: 12.5px; line-height: 1.8;
+    color: #fed7aa;
+    display: none;
+  }
+  .la-model-answer .ma-label {
+    font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: #fb923c;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .la-model-answer ul { padding-left: 18px; margin: 6px 0; }
+  .la-model-answer li { margin-bottom: 5px; }
+  .la-model-answer strong { color: #fbbf24; }
+
+  /* SCORE PANEL */
+  .score-panel {
+    max-width: 860px; margin: 0 auto 20px; padding: 0 16px;
+  }
+  .score-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+    gap: 16px;
+  }
+  .score-info { font-size: 14px; color: var(--muted); }
+  .score-info strong { color: var(--teal); font-size: 22px; }
+  .score-btn {
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--teal-dim), var(--blue));
+    border: none; border-radius: 8px;
+    color: #fff; font-weight: 600;
+    font-size: 13px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .score-btn:hover { opacity: 0.85; }
+
+  /* RESULTS MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #141d2e;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 400px; width: 90%;
+    text-align: center;
+  }
+  .modal-trophy { font-size: 52px; margin-bottom: 12px; }
+  .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--white); }
+  .modal-score { font-size: 3rem; font-weight: 700; color: var(--teal); margin: 12px 0 4px; }
+  .modal-grade { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  .modal-close {
+    padding: 10px 28px;
+    background: var(--teal);
+    border: none; border-radius: 8px;
+    color: #000; font-weight: 700;
+    font-size: 14px; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  @media(max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .hero-stats { gap: 20px; }
+    .q-header { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="wrapper">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">HSM 222 · Study Assessment</div>
+  <h1>Health Systems<br><span>Management</span> Quiz</h1>
+  <p>Comprehensive assessment covering Management Theories, HRM, Finance, TQM & Lewin's Change Theory</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="num">50</div><div class="lbl">MCQs</div></div>
+    <div class="stat"><div class="num">20</div><div class="lbl">Short Answer</div></div>
+    <div class="stat"><div class="num">10</div><div class="lbl">Long Answer</div></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <span class="progress-label">MCQ Progress</span>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill"></div></div>
+  <span class="progress-count" id="prog-count">0 / 50</span>
+</div>
+
+<!-- MCQ SECTION -->
+<div class="section-header">
+  <div class="section-icon icon-mcq">🎯</div>
+  <div class="section-title-group">
+    <h2>Multiple Choice Questions</h2>
+    <p>Select the best answer — instant feedback provided</p>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="questions" id="mcq-container"></div>
+
+<!-- SHORT ANSWER SECTION -->
+<div class="section-header">
+  <div class="section-icon icon-short">✏️</div>
+  <div class="section-title-group">
+    <h2>Short Answer Questions</h2>
+    <p>Write your response, then reveal the model answer</p>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="questions" id="sa-container"></div>
+
+<!-- LONG ANSWER SECTION -->
+<div class="section-header">
+  <div class="section-icon icon-long">📝</div>
+  <div class="section-title-group">
+    <h2>Long Answer / Essay Questions</h2>
+    <p>Structured essay responses — comprehensive model answers included</p>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="questions" id="la-container"></div>
+
+<!-- SCORE PANEL -->
+<div class="score-panel">
+  <div class="score-box">
+    <div class="score-info">MCQ Score: <strong id="live-score">0</strong> / 50</div>
+    <button class="score-btn" onclick="showResults()">View Final Score</button>
+  </div>
+</div>
+
+</div><!-- end wrapper -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-trophy" id="m-trophy">🏆</div>
+    <h3>Your MCQ Score</h3>
+    <div class="modal-score" id="m-score"></div>
+    <div class="modal-grade" id="m-grade"></div>
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+// ===================== BACKGROUND CANVAS =====================
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+const particles = Array.from({length: 60}, () => ({
+  x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.5 + 0.3, vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+  a: Math.random()
+}));
+function animBg() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if(p.x < 0) p.x = canvas.width; if(p.x > canvas.width) p.x = 0;
+    if(p.y < 0) p.y = canvas.height; if(p.y > canvas.height) p.y = 0;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,201,177,${p.a * 0.5})`; ctx.fill();
+  });
+  requestAnimationFrame(animBg);
+}
+animBg();
+
+// ===================== DATA =====================
+const mcqs = [
+  // Section 1: Intro & Building Blocks
+  { q: "Which WHO framework identifies six fundamental building blocks of a health system?", opts: ["Alma-Ata Declaration","WHO Health System Building Blocks","Sustainable Development Goals","Ottawa Charter"], ans: 1, exp: "The WHO framework identifies six building blocks: Service Delivery, Health Workforce, Health Information Systems, Medical Products, Health Financing, and Leadership/Governance." },
+  { q: "Which of the following is NOT one of the WHO's six health system building blocks?", opts: ["Health Financing","Service Delivery","Research and Innovation","Leadership and Governance"], ans: 2, exp: "The six building blocks are: Service Delivery, Health Workforce, Health Information Systems, Medical Products, Health Financing, and Leadership/Governance. Research and Innovation is not one of them." },
+  { q: "According to the WHO, a health system is defined as:", opts: ["All hospitals and clinics in a country","The sum of organizations, institutions, and resources whose primary purpose is to improve health","A government department responsible for medical services","Any entity that provides curative care"], ans: 1, exp: "The WHO defines a health system as 'the sum of the organizations, institutions, and resources whose shared primary purpose is to improve health.'" },
+  { q: "A Health Management Information System (HMIS) is designed specifically to:", opts: ["Provide direct patient care","Assist in the management and planning of health programmes","Conduct clinical research","Train healthcare workers"], ans: 1, exp: "An HMIS is an information system specially designed to assist in the management and planning of health programmes." },
+  { q: "Which of the five core pillars of HSM addresses strategic policy frameworks and accountability?", opts: ["Health Financing","Service Delivery","Leadership/Governance","Workforce Management"], ans: 2, exp: "Leadership/Governance is the pillar that covers strategic direction, policy development, and accountability structures." },
+
+  // Section 2: Need for Managers
+  { q: "The primary reason healthcare organizations require managers is that:", opts: ["Managers earn higher salaries","Organizations achieve goals beyond any single individual's capacity","Clinical staff prefer not to manage their own work","It is a legal requirement in most countries"], ans: 1, exp: "Organizations are created to achieve goals beyond individual capacity. The complexity of healthcare tasks means individual staff operating alone cannot accomplish organizational objectives." },
+  { q: "Which of the following is NOT identified as a managerial role within health services?", opts: ["Procurement Management","Facilities Management","Public Relations Management","Information Management"], ans: 2, exp: "The identified managerial roles include Finance, HR, Clinical, Staff, Project, Procurement, Information, Facilities, and Operational Management. Public Relations Management is not specifically listed." },
+  { q: "Health systems management ensures that 'right people are in the right jobs' refers to which management function?", opts: ["Financial Management","Human Resource Management","Quality Assurance","Strategic Planning"], ans: 1, exp: "Ensuring the right people are in the right jobs is a core Human Resource Management function, which encompasses staffing, recruitment, and placement." },
+  { q: "Which statement best describes what health systems management ensures at the departmental level?", opts: ["All departments compete for resources","Departments work towards a common goal","Each department operates independently","Clinical departments outperform administrative ones"], ans: 1, exp: "HSM ensures all departments are working towards a common goal for mutual development and growth." },
+  { q: "Resource optimization in healthcare management means:", opts: ["Spending all available budget","Acquiring the most expensive equipment","Ensuring organizational tasks are carried out in the best way to achieve goals","Reducing staff numbers to cut costs"], ans: 2, exp: "Resource optimization means ensuring organizational tasks are carried out in the best way possible to achieve organizational goals efficiently." },
+
+  // Section 3: Management Theories
+  { q: "Scientific Management (Taylorism) was developed in approximately which period?", opts: ["1800–1850","1900–1930","1950–1970","1980–2000"], ans: 1, exp: "Scientific Management, founded by Frederick Winslow Taylor, dominated organizational thinking from approximately 1900 to 1930." },
+  { q: "Which founder is associated with Administrative Management and the 14 Principles of Management?", opts: ["Frederick Taylor","Max Weber","Henri Fayol","Elton Mayo"], ans: 2, exp: "Henri Fayol developed Administrative Management and articulated the 14 Principles of Management including unity of command, division of work, and esprit de corps." },
+  { q: "Max Weber's Bureaucratic theory emphasizes:", opts: ["Emotional relationships among workers","Clear hierarchy, written rules, and merit-based advancement","Maximum task efficiency through standardization","Individual creativity and innovation"], ans: 1, exp: "Weber's bureaucratic model emphasizes clear hierarchy of authority, written rules and procedures, division of labour, impersonal relationships, and merit-based career advancement." },
+  { q: "The Human Relations approach was shaped primarily by concern about:", opts: ["Low productivity in factories","Employee alienation and narrow focus on productivity","Insufficient government regulation","Technological change in workplaces"], ans: 1, exp: "The human relations approach was shaped by concern about employee alienation and the conviction that a narrow focus on productivity could lead to poorer job performance." },
+  { q: "According to McGregor's Theory Y, workers are viewed as:", opts: ["Needing close supervision","Disliking work and avoiding responsibility","Naturally motivated and capable of self-direction","Primarily motivated by financial rewards"], ans: 2, exp: "Theory Y holds that people view work as natural, will exercise self-direction, seek responsibility, and can be creative and innovative." },
+  { q: "Maslow's Hierarchy of Needs places which need at the highest level?", opts: ["Safety needs","Esteem needs","Self-actualization","Physiological needs"], ans: 2, exp: "Self-actualization sits at the top of Maslow's hierarchy, representing the realization of one's full potential." },
+  { q: "The Socio-Technical Approach to management emerged predominantly from:", opts: ["1900–1930","1930–1960","1970s onwards","2000s onwards"], ans: 2, exp: "The Socio-Technical Approach emerged from the 1970s onwards, encompassing both the technological/task attributes and the interpersonal and organizational context of work." },
+  { q: "Implementation of Electronic Health Records (EHR) considering staff workflows is an example of which management approach?", opts: ["Scientific Management","Administrative Management","Socio-Technical Approach","Contingency Theory"], ans: 2, exp: "EHR implementation that considers staff workflows reflects the Socio-Technical Approach, which balances both technical and human/social factors in system design." },
+  { q: "Contingency Theory in management states that:", opts: ["One best management style exists for all situations","Management approaches should depend on the specific situation","Classical theories are always superior","Technology determines organizational structure"], ans: 1, exp: "Contingency Theory holds that no single management style works best; the appropriate approach depends on the specific situation and context." },
+  { q: "Which principle is part of Fayol's 14 Principles of Management?", opts: ["Profit maximization","Esprit de corps","Technological determinism","Customer supremacy"], ans: 1, exp: "Esprit de corps (team spirit) is one of Fayol's 14 Principles, emphasizing the importance of morale and unity among staff." },
+
+  // Section 4: Health Policy & Strategic Planning
+  { q: "The policy cycle stage where issues are prioritized for policy action is called:", opts: ["Policy formulation","Agenda setting","Policy adoption","Problem identification"], ans: 1, exp: "Agenda Setting is the stage where identified health issues are prioritized for policy action and placed on the policy agenda." },
+  { q: "In strategic planning, SMART objectives must be:", opts: ["Simple, Manageable, Accurate, Realistic, Timely","Specific, Measurable, Achievable, Realistic, Time-bound","Strategic, Monitored, Assessed, Revised, Transparent","Systematic, Methodological, Applied, Reviewed, Tested"], ans: 1, exp: "SMART objectives are Specific, Measurable, Achievable (or Attainable), Realistic, and Time-bound." },
+  { q: "In Kotter's 8-Step Change Model, what is the first step?", opts: ["Form a powerful coalition","Create a vision for change","Create urgency","Anchor changes in culture"], ans: 2, exp: "The first step in Kotter's model is to 'Create urgency' — establishing a compelling reason why change is necessary." },
+  { q: "Devolution in healthcare refers to:", opts: ["The decline of healthcare quality","Transfer of power from central to sub-national government levels","Privatization of health services","Merger of health facilities"], ans: 1, exp: "Devolution is the transfer of power and decision-making authority from central to sub-national levels of government, bringing decisions closer to service delivery." },
+  { q: "Kenya's devolved health system transferred health service delivery to:", opts: ["23 provincial governments","47 semi-autonomous county governments","The national Ministry of Health","Private health authorities"], ans: 1, exp: "Kenya adopted a devolved system where health services delivery became a function of 47 semi-autonomous county governments." },
+  { q: "Which of the following is a challenge associated with devolution?", opts: ["Improved equity in all cases","Simplified decision-making","Complicated and politicized decision-making","Reduced need for capacity building"], ans: 2, exp: "Challenges of devolution include complicated and politicized decision-making, planning and budgeting challenges at local levels, and need for capacity building." },
+  { q: "The last step in Kotter's 8-Step Change Model is:", opts: ["Build on the change","Create short-term wins","Anchor the changes in corporate culture","Remove obstacles"], ans: 2, exp: "The final step is to 'Anchor the changes in corporate culture' — embedding new approaches into the organization's norms and values." },
+  { q: "A healthcare organization's 'mission' in strategic planning describes:", opts: ["Where the organization wants to be in the future","What the organization does and why it exists","Specific measurable targets for the year","How financial resources will be allocated"], ans: 1, exp: "The mission describes what the organization does and why — its core purpose and reason for existence." },
+
+  // Section 5: HRM
+  { q: "Which HR function involves forecasting the number and types of staff needed?", opts: ["Recruitment","Workforce Planning","Performance Management","Training and Development"], ans: 1, exp: "Workforce Planning involves forecasting staffing needs to ensure the right number and types of staff are available when needed." },
+  { q: "Which of the following is identified as a recruitment challenge in healthcare?", opts: ["Excess supply of qualified professionals","Talent shortages","Rapid hiring processes","Strong employer branding"], ans: 1, exp: "Talent shortages — the limited supply of qualified healthcare professionals — is identified as a key recruitment challenge." },
+  { q: "Poor leadership in a healthcare organization most directly contributes to:", opts: ["Improved recruitment outcomes","Retention challenges and staff turnover","Better patient satisfaction scores","Increased financial efficiency"], ans: 1, exp: "Poor leadership is identified as a primary retention challenge, leading to low staff morale, disengagement, and turnover." },
+  { q: "Research has identified which of the following as significantly influencing staff performance in healthcare?", opts: ["Hospital architecture","Management styles","Number of patients seen","Geographic location"], ans: 1, exp: "Research reveals that employee remuneration, management styles, recruitment and selection practices, and workplace design significantly influence staff performance." },
+  { q: "Which strategy is most effective for improving healthcare worker retention?", opts: ["Mandatory overtime requirements","Reward and recognition programmes","Reducing team collaboration","Limiting career development opportunities"], ans: 1, exp: "Reward and recognition programmes, combined with competitive compensation, training opportunities, and career pathways, are effective retention strategies." },
+  { q: "A positive working climate in healthcare settings primarily leads to:", opts: ["Increased administrative costs","Enhanced motivation and improved patient care quality","Reduced government oversight","Higher staff turnover"], ans: 1, exp: "Supportive work environments and strong managerial backing significantly enhance motivation and performance, ultimately improving patient care quality." },
+
+  // Section 6: Financial Management & UHC
+  { q: "Universal Health Coverage (UHC) means that all people have access to:", opts: ["Only emergency health services","The full range of quality health services without financial hardship","Free preventive care only","Services provided by public hospitals exclusively"], ans: 1, exp: "UHC means all people have access to the full range of quality health services they need, when and where they need them, without financial hardship." },
+  { q: "Which type of healthcare budget covers day-to-day expenses like salaries and utilities?", opts: ["Capital Budget","Programme Budget","Operating Budget","Cash Budget"], ans: 2, exp: "The Operating Budget covers day-to-day expenses including salaries, supplies, and utilities." },
+  { q: "The three key dimensions of UHC coverage are:", opts: ["Quality, Safety, Efficiency","Population covered, services covered, financial protection","Input, Process, Output","Prevention, Treatment, Rehabilitation"], ans: 1, exp: "The three key dimensions of UHC are: who is covered (population), what services are covered (service), and how much people pay (financial protection)." },
+  { q: "Achieving UHC requires not only increased funding but also:", opts: ["Reduction in the number of health facilities","Efficient, equitable, and accountable use of resources","Elimination of private health insurance","Centralization of all health services"], ans: 1, exp: "UHC requires not only increased funding for the health sector but also the efficient, equitable, and accountable use of resources." },
+  { q: "A Capital Budget in healthcare is used for:", opts: ["Daily operational costs","Long-term investments in equipment and facilities","Emergency expenditure","Staff bonuses"], ans: 1, exp: "A Capital Budget covers long-term investments such as equipment, buildings, and facilities." },
+  { q: "Public Financial Management (PFM) in the context of UHC emphasizes:", opts: ["Profit maximization","Accountability, efficiency, equity, and sustainability","Reduction of all health spending","Privatization of health financing"], ans: 1, exp: "PFM for UHC emphasizes accountability (transparency), efficiency (value for money), equity (fair distribution), and sustainability (long-term viability)." },
+
+  // Section 7: TQM
+  { q: "Total Quality Management (TQM) in healthcare primarily focuses on:", opts: ["Reducing staff numbers","Continuously improving quality of care and operational efficiency","Maximizing profit","Standardizing all clinical procedures permanently"], ans: 1, exp: "TQM in healthcare is a management approach focused on continuously improving the quality of patient care and operational efficiency." },
+  { q: "Which TQM principle places patients as the ultimate customers?", opts: ["Process Orientation","Teamwork","Customer Focus","Data-Driven Decision-Making"], ans: 2, exp: "Customer Focus is the TQM principle that prioritizes patients as the ultimate customers, aiming to meet their needs and enhance satisfaction." },
+  { q: "Continuous Quality Improvement (CQI) is best described as:", opts: ["A one-time quality audit","Ongoing systematic enhancement of processes, services, and outcomes","A regulatory compliance exercise","Reducing costs at all costs"], ans: 1, exp: "CQI involves systematically identifying areas for improvement, implementing changes, measuring outcomes, and sustaining improvements over time." },
+  { q: "Which TQM best practice is considered most essential for successful implementation?", opts: ["Patient billing optimization","Top-management commitment","External consultant involvement","Reducing employee participation"], ans: 1, exp: "Top-management commitment is considered the most essential TQM best practice, as leadership support is fundamental to driving quality culture." },
+  { q: "The Structure-Process-Outcome framework in healthcare quality measurement refers to:", opts: ["Planning, implementation, evaluation","Resources/org characteristics, activities, results for patients","Inputs, throughputs, outputs","Policies, procedures, performance"], ans: 1, exp: "Structure refers to resources and organizational characteristics; Process refers to activities and interventions; Outcome refers to results and impacts on patients." },
+  { q: "Research shows that Continuous Quality Improvement positively predicts:", opts: ["Financial profitability","Patient satisfaction","Staff absenteeism reduction","Regulatory compliance rates"], ans: 1, exp: "Research shows that continuous quality improvement positively and significantly predicts patient satisfaction in healthcare settings." },
+
+  // Section 8: Lewin's Change Theory
+  { q: "Kurt Lewin introduced his Change Theory in:", opts: ["1920","1938","1951","1965"], ans: 2, exp: "Lewin's Change Theory was introduced in 1951, making it one of the earliest and most fundamental models of planned organizational change." },
+  { q: "In Lewin's Change Theory, 'equilibrium' occurs when:", opts: ["Change is successfully completed","Driving forces equal restraining forces and no change occurs","Refreezing has been achieved","Management approves the change"], ans: 1, exp: "Equilibrium is the state where driving forces equal restraining forces, resulting in a stable state where no change occurs." },
+  { q: "The correct order of Lewin's three-stage change model is:", opts: ["Change → Unfreeze → Refreeze","Refreeze → Unfreeze → Change","Unfreeze → Change → Refreeze","Change → Refreeze → Unfreeze"], ans: 2, exp: "Lewin's model proceeds in the order: Unfreeze (break down status quo) → Change (implement new behaviours) → Refreeze (stabilize new state)." },
+  { q: "The primary purpose of the 'Unfreezing' stage in Lewin's model is to:", opts: ["Implement new procedures immediately","Overcome resistance and prepare people for change","Evaluate the outcomes of change","Reward employees for accepting change"], ans: 1, exp: "Unfreezing involves overcoming the strains of resistance and group conformity, creating the need for change by showing that the status quo is no longer acceptable." },
+  { q: "Which role in Lewin's change framework is responsible for designing and implementing change?", opts: ["Change Sponsor","Change Advocate","Change Agent","Change Participant"], ans: 2, exp: "The Change Agent is responsible for seeing that change occurs and designs and implements the change process." },
+  { q: "A criticism of Lewin's Change Theory is that it:", opts: ["Is too complex for practical use","Assumes organisations operate in a stable state","Focuses too much on employee welfare","Ignores the role of leadership"], ans: 1, exp: "A major criticism is that Lewin's model assumes stable organisations, which is rarely true in modern healthcare's dynamic, VUCA environment." },
+  { q: "In the Kotter–Lewin comparison, Kotter's Step 8 ('Anchor changes in culture') corresponds to Lewin's:", opts: ["Unfreeze stage","Change stage","Refreeze stage","Action Research phase"], ans: 2, exp: "Kotter's Step 8 (anchoring in culture) corresponds to Lewin's Refreeze stage, where the new state is stabilized and embedded in the organization." },
+];
+
+const shortAnswers = [
+  { q: "Define 'Health Systems Management' and explain why it is important in the healthcare sector.", ans: "Health Systems Management (HSM) describes the leadership and general management of hospitals, hospital networks, and healthcare systems. It involves planning, organizing, and monitoring healthcare resources and services to efficiently meet population health needs. It is important because healthcare is complex and dynamic — it requires coordinated management to ensure specific outcomes are attained, departments run smoothly, the right people are in the right jobs, resources are used efficiently, and all units work toward a common goal." },
+  { q: "List and briefly describe the WHO's six health system building blocks.", ans: "1. Service Delivery – Effective, safe, quality health services. 2. Health Workforce – Responsive, fair, and efficient health workers. 3. Health Information Systems – Reliable data for decision-making. 4. Medical Products, Vaccines & Technologies – Access to essential medicines. 5. Health Financing – Adequate funds with protection from financial hardship. 6. Leadership and Governance (Stewardship) – Strategic policy frameworks, regulation, and accountability." },
+  { q: "Distinguish between Scientific Management and the Human Relations approach to management.", ans: "Scientific Management (Taylor) focuses on task efficiency, treating workers as economic beings motivated primarily by financial rewards, with little regard for interpersonal issues. Management is directive and controlling. The Human Relations approach emphasizes social needs, motivation, and behaviour; workers are viewed as social beings motivated by recognition and belonging. Management is participative and supportive. In healthcare, Scientific Management leads to standardized procedures while Human Relations fosters patient-centred care teams." },
+  { q: "What is devolution in the context of health services, and what are two challenges it presents?", ans: "Devolution is the transfer of power and decision-making authority from central to sub-national levels of government, bringing health service management closer to communities. In Kenya, health delivery became a function of 47 county governments. Challenges include: (1) Complicated and politicized decision-making at county level, and (2) Planning and budgeting challenges, requiring significant capacity building at local levels to manage health resources effectively." },
+  { q: "Explain Maslow's Hierarchy of Needs and its relevance to HRM in healthcare.", ans: "Maslow proposed that human needs are arranged in a hierarchy: physiological needs (food, shelter) at the base, then safety needs, love/belonging needs, esteem needs, and self-actualization at the top. In HRM, this theory helps managers understand staff motivation. Healthcare workers must have basic safety and fair pay (lower levels) before they can be motivated by recognition (esteem) or career growth (self-actualization). Managers must address lower-order needs to achieve high performance and retention." },
+  { q: "Define Universal Health Coverage (UHC) and identify its three key dimensions.", ans: "Universal Health Coverage means all people have access to the full range of quality health services they need, when and where they need them, without financial hardship. Its three key dimensions are: (1) Population coverage – who is covered; (2) Service coverage – what services are covered (the range and quality of services); and (3) Financial protection – how much people pay out-of-pocket, ensuring access does not cause financial hardship." },
+  { q: "What is Total Quality Management (TQM) and what are four of its core principles?", ans: "TQM is a strategic management approach focused on continuously improving the quality of patient care and operational efficiency. It has become a globally recognized philosophy focused on customer satisfaction and organizational performance. Four core principles are: (1) Customer Focus – prioritizing patients; (2) Continuous Quality Improvement – ongoing enhancement of processes; (3) Employee Involvement – participation of all staff members; and (4) Data-Driven Decision-Making – using evidence to guide improvements." },
+  { q: "Describe McGregor's Theory X and Theory Y and their implications for managing healthcare staff.", ans: "Theory X assumes workers dislike work, must be coerced, avoid responsibility, and need close supervision — a directive, controlling management style. Theory Y assumes workers view work as natural, will self-direct, seek responsibility, and can be creative. In healthcare, Theory X may result in rigid task assignment and low morale, while Theory Y encourages participative management, autonomy, and innovation, which are better suited to professional healthcare environments where staff judgment and motivation are critical to patient outcomes." },
+  { q: "Explain the concept of 'Unfreezing' in Lewin's Change Theory and how it can be achieved.", ans: "Unfreezing is the first stage of Lewin's model, involving casting aside existing attitudes, value systems, or structures so new ones can be learnt. It is necessary to overcome individual resistance and group conformity. It can be achieved through three methods: (1) Increasing driving forces — strengthening forces that push for change; (2) Decreasing restraining forces — reducing forces that resist change; and (3) Combining both approaches. Key activities include communicating the need for change, using psychological disconfirmation, and conducting diagnostic activities like interviews." },
+  { q: "What is the 'Refreezing' stage in Lewin's model and why is it critical?", ans: "Refreezing is the final stage where change is stabilized and becomes the new standard operating procedure. Without refreezing, there is a void that old patterns can fill, causing regression to previous behaviours. It is achieved through supporting mechanisms: embedding change in organizational culture, establishing new norms and behavioural expectations, formalizing new policies and structures, and setting new standards. Leaders play a pivotal role by reinforcing new behaviours with positive feedback, recognition, and rewards." },
+  { q: "Identify four key HRM functions in healthcare and briefly describe each.", ans: "1. Workforce Planning – Forecasting future staffing needs to ensure adequate coverage. 2. Recruitment – Attracting qualified candidates to fill vacancies. 3. Training and Development – Building skills and competencies of existing staff. 4. Performance Management – Evaluating staff performance and implementing improvement measures. Additional functions include compensation management, employee relations, and retention strategies to maintain a motivated and skilled healthcare workforce." },
+  { q: "What is the Policy Cycle and name any four of its stages in order?", ans: "The Policy Cycle is the systematic process through which health policies are developed, implemented, and evaluated. Four key stages in order: (1) Problem Identification — recognizing health issues requiring attention; (2) Agenda Setting — prioritizing issues for policy action; (3) Policy Formulation — developing policy options and strategies; (4) Policy Implementation — putting policy into practice. The cycle concludes with Policy Evaluation, which assesses outcomes and informs future policy." },
+  { q: "Explain the roles of 'driving forces' and 'restraining forces' in Lewin's Force Field Analysis.", ans: "In Lewin's framework, driving forces are those that push for change and facilitate movement toward a desired new state, while restraining forces maintain the status quo and resist change. The current state is an equilibrium where both forces balance. To effect change, managers must either increase driving forces (strengthen reasons to change), decrease restraining forces (reduce barriers), or both. Lewin suggested that reducing restraining forces produces less tension and resistance than simply increasing driving forces." },
+  { q: "List four strategies a health organization can use to improve staff retention.", ans: "1. Reward and recognition programmes — acknowledging staff contributions formally and informally. 2. Competitive compensation and benefits — offering fair pay aligned with market rates. 3. Training and development opportunities — enabling staff to grow professionally. 4. Career development pathways — clear routes for advancement within the organization. Additional strategies include job flexibility, mentorship programmes, strong workplace culture, and open communication channels that give staff a voice." },
+  { q: "Describe the key characteristics of the Bureaucratic management approach and its application in healthcare.", ans: "Weber's Bureaucratic approach is characterized by: a clear hierarchy of authority, written rules and standard procedures, division of labour based on specialization, impersonal (role-based rather than personal) relationships, and career advancement based on merit. In healthcare, this manifests in hospital organizational charts (hierarchy), standard operating procedures and clinical protocols, credentialing and licensing systems (merit-based qualification), and formal reporting structures that ensure accountability and consistency in care delivery." },
+  { q: "What is the Socio-Technical Approach to management and how does it apply to healthcare?", ans: "The Socio-Technical Approach recognizes that effective organizations must encompass both the technological/task attributes of work AND the interpersonal and organizational context in which it is performed. In healthcare, this means that introducing new technology (like EHRs) should not focus solely on the technical system but must consider staff workflows, relationships, and the human environment. System redesign that considers both technical requirements and social factors leads to better adoption, fewer errors, and improved staff and patient outcomes." },
+  { q: "Define 'strategic planning' in healthcare and identify its six key components.", ans: "Strategic planning is the process of defining organizational direction and making decisions on allocating resources to pursue that direction. Six key components are: (1) Vision — where the organization wants to be; (2) Mission — what it does and why; (3) Goals — broad aims; (4) Objectives — specific, measurable SMART targets; (5) Strategies — how objectives will be achieved; and (6) Action Plans — detailed implementation steps with timelines, responsibilities, and resources." },
+  { q: "Explain how TQM supports patient satisfaction in healthcare.", ans: "TQM fosters a culture of quality that aligns staff efforts with organizational goals centred on patient experience. Through Continuous Quality Improvement (CQI), healthcare organizations systematically identify gaps in care, implement process improvements, and measure outcomes. Research confirms CQI positively and significantly predicts patient satisfaction. TQM principles such as customer focus, teamwork, and data-driven decisions ensure that improvement initiatives are evidence-based, sustained, and aligned with patient expectations, leading to better care experiences and outcomes." },
+  { q: "What are the four roles identified in Lewin's change process, and what does each do?", ans: "1. Change Sponsor — the individual or group with the power to determine that change will occur; legitimises the change. 2. Change Agent — responsible for seeing that change occurs; designs and implements the change. 3. Change Advocate — wants to achieve change but lacks the power to sanction it; needs sponsor support to proceed. 4. Change Participant — the individual who will alter their knowledge, skills, attitudes, or behaviour as a result of the change. All roles act interdependently across all three stages." },
+  { q: "Name and describe two sources of healthcare financing.", ans: "1. Government Funding — Tax revenue is allocated to the health sector through national and county budgets, providing the backbone of public health systems. It enables universal provision of essential services regardless of individual ability to pay. 2. Health Insurance — Both social (national/contributory) and private insurance schemes pool risk across populations. Premiums collected are used to pay for members' healthcare, reducing out-of-pocket payments at the point of care. Additional sources include out-of-pocket payments, donor/international aid, and public-private partnerships." },
+];
+
+const longAnswers = [
+  {
+    q: "Critically compare and contrast the Classical Management Theories (Scientific Management, Administrative Management, and Bureaucratic Theory) with the Human Relations Approach. Discuss the advantages and limitations of each in the context of contemporary healthcare management.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>Management theories have evolved significantly over the past century. In healthcare management, understanding these theories is essential for effective organizational leadership.<br><br><strong>Classical Management Theories</strong><br><ul><li><strong>Scientific Management (Taylor, 1900–1930):</strong> Focused on maximizing task efficiency through standardization, division of labour, and time-and-motion studies. In healthcare, this translates to standardized clinical protocols and specialized roles. <em>Advantage:</em> Improves operational efficiency. <em>Limitation:</em> Treats workers as interchangeable parts, neglects human needs, and can cause alienation.</li><li><strong>Administrative Management (Fayol):</strong> Established 14 Principles (unity of command, division of work, esprit de corps, etc.) creating hierarchical structures. <em>Advantage:</em> Provides clear authority and coordination. <em>Limitation:</em> Rigid hierarchies can slow decision-making in emergency healthcare environments.</li><li><strong>Bureaucratic Theory (Weber):</strong> Emphasized formal rules, meritocracy, and impersonal relationships. <em>Advantage:</em> Ensures consistency, accountability, and credentialing. <em>Limitation:</em> Can become inflexible and resistant to innovation.</li></ul><strong>Human Relations Approach (1930–1970)</strong><br>Pioneered by Mayo, Maslow, and McGregor, this approach recognizes that social needs, motivation, and behaviour are critical to performance. Theory Y management (McGregor) treats workers as self-motivated and capable. <em>Advantages:</em> Better staff engagement, lower turnover, patient-centred care. <em>Limitations:</em> May overlook the need for structure in high-risk clinical environments.<br><br><strong>Comparison</strong><br>Classical theories prioritize system efficiency while Human Relations prioritizes people. Neither is sufficient alone. Contemporary healthcare requires both: standardized protocols (classical) AND motivated, empowered staff (human relations).<br><br><strong>Conclusion</strong><br>Modern HSM integrates both approaches — using structured processes for safety and consistency while fostering a positive working climate for staff performance and patient satisfaction.`
+  },
+  {
+    q: "Discuss Lewin's Change Theory in detail, explaining all three stages with healthcare examples. Also identify the criticisms of the theory and compare it with Kotter's 8-Step Model.",
+    marks: 20,
+    ans: `<strong>Overview</strong><br>Kurt Lewin (1890–1947) introduced his Change Theory in 1951. It conceptualizes change as modification of forces maintaining a system's equilibrium. His model comprises three stages: Unfreeze → Change → Refreeze.<br><br><strong>Stage 1: Unfreeze</strong><br>Breaking down existing attitudes and status quo. Healthcare example: When introducing a new EHR system, managers show staff the limitations of paper records and present evidence of errors, creating psychological disconfirmation. Managers increase driving forces (data showing improvement) and decrease restraining forces (training to address fear of technology).<br><br><strong>Stage 2: Change (Movement)</strong><br>Implementing new behaviours, systems, or structures. Healthcare example: Staff receive training on the new EHR; supervisors model new workflows; champions demonstrate benefits. The stage involves confusion mixed with discovery as new competencies develop.<br><br><strong>Stage 3: Refreeze</strong><br>Stabilizing the change as standard operating procedure. Healthcare example: EHR use is embedded in policy, new staff are onboarded into the system from day one, performance indicators include EHR compliance, and managers reward consistent use with recognition.<br><br><strong>Criticisms of Lewin's Model</strong><br><ul><li>Assumes organisational stability — rarely true in modern healthcare</li><li>Too linear — real change is non-linear and iterative</li><li>Ignores organisational politics and power dynamics</li><li>Top-down and management-driven rather than participatory</li><li>Unsuitable for continuous, rapid change in VUCA environments</li></ul><strong>Comparison with Kotter's 8-Step Model</strong><br>Kotter's model is an expansion of Lewin's: Unfreeze corresponds to Steps 1–4 (urgency, coalition, vision, communication); Change corresponds to Steps 5–7 (enable action, short-term wins, sustain acceleration); Refreeze corresponds to Step 8 (anchor in culture). Kotter provides more operational detail, while Lewin provides the conceptual foundation.<br><br><strong>Conclusion</strong><br>Despite criticisms, Lewin's theory remains a foundational framework for healthcare change management, providing an accessible and broadly applicable model that, when combined with Kotter's operational steps, offers a comprehensive guide for health system transformation.`
+  },
+  {
+    q: "Discuss the concept of Total Quality Management (TQM) in healthcare. Explain its core principles, best practices, and how it relates to patient satisfaction. Use the Structure-Process-Outcome framework to illustrate quality measurement.",
+    marks: 20,
+    ans: `<strong>Definition and Context</strong><br>TQM is a strategic management philosophy focused on continuously improving quality of patient care and operational efficiency. It has become globally recognized, emphasizing customer satisfaction and organizational performance.<br><br><strong>Core Principles of TQM</strong><br><ul><li><strong>Customer Focus:</strong> Patients are the ultimate customers; their needs drive all improvement efforts.</li><li><strong>Continuous Quality Improvement (CQI):</strong> Ongoing identification of gaps, implementation of changes, and measurement of outcomes.</li><li><strong>Employee Involvement:</strong> All staff participate in quality efforts, not just management.</li><li><strong>Teamwork:</strong> Interdisciplinary collaboration is central to quality care.</li><li><strong>Data-Driven Decision-Making:</strong> Evidence guides all improvement initiatives.</li><li><strong>Long-Term Commitment:</strong> TQM is a sustained organizational philosophy, not a one-time project.</li></ul><strong>TQM Best Practices in Healthcare</strong><br>Best practices include top-management commitment (essential), process management, resource management, training and education, and fostering an organizational culture of quality. Research demonstrates that CQI positively and significantly predicts patient satisfaction.<br><br><strong>Structure-Process-Outcome Framework</strong><br><ul><li><strong>Structure:</strong> Resources and organizational characteristics — staffing ratios, equipment, facility design, accreditation status.</li><li><strong>Process:</strong> Activities and interventions — adherence to clinical protocols, communication practices, hand hygiene compliance.</li><li><strong>Outcome:</strong> Results for patients — mortality rates, infection rates, patient satisfaction scores, readmission rates.</li></ul>Example: A hospital improves nurse-to-patient ratios (Structure) → implements standardized bedside handoff protocols (Process) → achieves reduced patient harm events and higher satisfaction scores (Outcome).<br><br><strong>TQM and Patient Satisfaction</strong><br>TQM aligns staff efforts with patient-centred goals. Quality improvement initiatives must be aligned with patient expectations. Studies show CQI significantly predicts satisfaction, confirming that systematic quality management directly improves patient experience.<br><br><strong>Conclusion</strong><br>TQM provides a comprehensive, evidence-based framework for healthcare organizations to achieve sustained quality improvement. When implemented with genuine leadership commitment and staff engagement, it transforms organizational culture and measurably improves patient outcomes.`
+  },
+  {
+    q: "Explain Human Resource Management in healthcare, discussing the challenges of recruitment and retention, strategies to overcome them, and the factors that influence healthcare worker performance.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>Human Resource Management (HRM) in healthcare involves the recruitment, training, development, and retention of healthcare professionals to ensure high-quality patient care. It is among the most challenging functions in health systems management given global workforce shortages.<br><br><strong>Key HRM Functions</strong><br>These include workforce planning, recruitment, selection, training and development, performance management, compensation, employee relations, and retention — all aimed at ensuring the right staff are in the right positions with the right skills.<br><br><strong>Recruitment Challenges</strong><br><ul><li>Talent shortages: Limited supply of qualified healthcare professionals, especially specialists.</li><li>Lengthy recruitment processes: Slow bureaucratic hiring procedures delay filling vacancies.</li><li>Biased hiring practices: Unfair selection undermines diversity and quality.</li><li>Weak employer branding: Difficulty attracting top talent when reputation is poor.</li></ul><strong>Retention Challenges</strong><br><ul><li>Poor leadership: Ineffective management is a primary driver of turnover.</li><li>Lack of motivation: Low morale and disengagement reduce commitment.</li><li>Inadequate compensation: Uncompetitive pay causes staff to seek alternatives.</li><li>Burnout: High workload and stress, especially post-pandemic, accelerate attrition.</li><li>Limited career development: Absence of growth opportunities drives talented staff away.</li></ul><strong>Strategies to Overcome Challenges</strong><br>Effective strategies include: reward and recognition programmes, competitive compensation, training and development, job flexibility, clear career pathways, mentorship, a strong workplace culture, and transparent communication about advancement opportunities.<br><br><strong>Factors Influencing Performance</strong><br>Research identifies four key influencers: (1) Employee remuneration — fair pay motivates performance; (2) Management styles — participative, Theory Y management fosters engagement; (3) Recruitment and selection practices — hiring the right people ensures a capable workforce; (4) Workplace design — physical and psychological environment affects wellbeing and productivity.<br><br><strong>Conclusion</strong><br>Effective HRM is foundational to health systems performance. By addressing recruitment and retention systematically and creating a positive working climate, health organizations ensure motivated staff who deliver high-quality, compassionate care.`
+  },
+  {
+    q: "Discuss health policy and strategic planning in healthcare. Explain the policy cycle, the key components of strategic planning, and the role of managing organizational change in health systems.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>Health policy and strategic planning are central functions of Health Systems Management, providing the direction and framework within which all health services operate.<br><br><strong>Health Policy Defined</strong><br>Health policy refers to decisions, plans, and actions undertaken to achieve specific healthcare goals. It defines a vision, outlines priorities, assigns roles to different stakeholders, and establishes the regulatory framework for health services.<br><br><strong>The Policy Cycle</strong><br><ul><li><strong>Problem Identification:</strong> Recognizing health issues requiring attention (e.g., rising maternal mortality).</li><li><strong>Agenda Setting:</strong> Prioritizing the issue for governmental action.</li><li><strong>Policy Formulation:</strong> Developing evidence-based policy options and strategies.</li><li><strong>Policy Adoption:</strong> Formal approval and legal legitimation of the policy.</li><li><strong>Policy Implementation:</strong> Putting policy into practice through programmes and services.</li><li><strong>Policy Evaluation:</strong> Assessing outcomes, impacts, and cost-effectiveness to inform future policy.</li></ul><strong>Strategic Planning Components</strong><br><ul><li><strong>Vision:</strong> The future state the organization aspires to achieve.</li><li><strong>Mission:</strong> The core purpose and reason for existence.</li><li><strong>Goals:</strong> Broad, long-term aims.</li><li><strong>Objectives:</strong> SMART (Specific, Measurable, Achievable, Realistic, Time-bound) targets.</li><li><strong>Strategies:</strong> Approaches for achieving objectives.</li><li><strong>Action Plans:</strong> Detailed steps, timelines, and responsibilities.</li></ul><strong>Managing Organizational Change</strong><br>Change is inevitable in healthcare due to technological advances, evolving population needs, policy reforms, and resource pressures. Kotter's 8-Step Model provides a framework: create urgency → form coalition → create vision → communicate → remove obstacles → create short-term wins → build momentum → anchor in culture. Lewin's model complements this with the Unfreeze-Change-Refreeze framework, addressing psychological readiness for change.<br><br><strong>Devolution as a Policy Example</strong><br>Kenya's transfer of health services to 47 county governments illustrates policy implementation and its challenges: improved local accountability but complicated decision-making and uneven capacity.<br><br><strong>Conclusion</strong><br>Effective health policy and strategic planning require systematic processes, evidence-based decision-making, and skilled change management. Together, they align organizational resources and behaviour toward improved population health outcomes.`
+  },
+  {
+    q: "Explain Universal Health Coverage (UHC) and discuss the role of financial management and public financial management in achieving it. What are the key challenges to UHC in low-and-middle-income countries?",
+    marks: 20,
+    ans: `<strong>Definition of UHC</strong><br>Universal Health Coverage means all people have access to the full range of quality health services they need, when and where they need them, without financial hardship. Its three dimensions are population coverage, service coverage, and financial protection.<br><br><strong>Financial Management and UHC</strong><br>Healthcare financial management encompasses accounting, budgeting, reporting, and analysis to ensure resources serve the organizational mission. Key components include budgeting (operating, capital, cash, programme), resource mobilization, financial reporting, internal controls, and auditing.<br><br>As stated in the notes: "The budget is not just numbers on paper — it is a reflection of our collective commitment to better health outcomes." Effective budgeting aligned with UHC goals ensures resources flow to priority services.<br><br><strong>Public Financial Management (PFM) and UHC</strong><br>PFM is critical because achieving UHC requires not only increased funding but also the efficient, equitable, and accountable use of resources. Four key PFM principles:<br><ul><li><strong>Accountability:</strong> Transparency in how resources are allocated and spent.</li><li><strong>Efficiency:</strong> Getting maximum health value from every shilling spent.</li><li><strong>Equity:</strong> Ensuring resources reach underserved and vulnerable populations.</li><li><strong>Sustainability:</strong> Building financial systems that endure beyond donor cycles.</li></ul><strong>Sources of Healthcare Financing</strong><br>These include government funding (tax revenue), health insurance (social and private), out-of-pocket payments, donor funding, and public-private partnerships. Diversifying financing sources builds resilience.<br><br><strong>Challenges to UHC in LMICs</strong><br><ul><li>Insufficient domestic funding for health — many countries fall below WHO's recommended health spending threshold.</li><li>High out-of-pocket payments causing financial hardship and care avoidance.</li><li>Inefficiency and corruption in public financial management.</li><li>Fragmented health systems with poor coordination between payers and providers.</li><li>Limited administrative capacity for UHC implementation, especially in devolved systems.</li><li>Inequitable distribution of services, with rural and marginalized populations underserved.</li></ul><strong>Conclusion</strong><br>Achieving UHC demands robust financial management systems, strong PFM frameworks, and political commitment to equitable resource allocation. In LMICs like Kenya, devolution and domestic resource mobilization are central strategies for progressively expanding coverage.`
+  },
+  {
+    q: "Discuss the WHO Health System Building Blocks framework. For each building block, explain its significance and identify one key challenge associated with it in sub-Saharan Africa.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>The WHO Health System Building Blocks provide a comprehensive framework for understanding, assessing, and strengthening health systems. Each block is interdependent, and weakness in one affects all others.<br><br><strong>1. Service Delivery</strong><br>Covers effective, safe, quality health services across prevention, promotion, treatment, and rehabilitation. <em>Significance:</em> Directly impacts health outcomes. <em>Challenge in SSA:</em> Inadequate infrastructure and geographic inaccessibility leave rural populations without essential services.<br><br><strong>2. Health Workforce</strong><br>Encompasses all health workers required to deliver services. <em>Significance:</em> No system functions without trained personnel. <em>Challenge in SSA:</em> Severe shortages due to brain drain (migration to high-income countries), inadequate training capacity, and poor remuneration.<br><br><strong>3. Health Information Systems</strong><br>Integrates data collection, processing, and use for decision-making. <em>Significance:</em> Evidence-based planning and monitoring depend on reliable data. <em>Challenge in SSA:</em> Weak data infrastructure, incomplete reporting, and poor data quality undermine planning and accountability.<br><br><strong>4. Medical Products, Vaccines & Technologies</strong><br>Access to essential medicines and equipment. <em>Significance:</em> Without medicines, clinical care is impossible. <em>Challenge in SSA:</em> Supply chain disruptions, counterfeit medicines, and import dependency cause frequent stockouts of essential drugs.<br><br><strong>5. Health Financing</strong><br>Raising, pooling, and allocating funds for health. <em>Significance:</em> Determines what services can be provided and who can access them. <em>Challenge in SSA:</em> Heavy reliance on donor funding, high out-of-pocket payments, and insufficient domestic resource mobilization threaten sustainability and equity.<br><br><strong>6. Leadership and Governance</strong><br>Strategic direction, regulation, and accountability. <em>Significance:</em> Provides the enabling environment for all other blocks to function. <em>Challenge in SSA:</em> Weak governance, corruption, and political instability undermine health system performance and erode public trust.<br><br><strong>Conclusion</strong><br>Strengthening health systems requires simultaneous investment across all six building blocks. In sub-Saharan Africa, context-specific strategies addressing workforce retention, domestic financing, and governance are particularly urgent for achieving health system resilience and Universal Health Coverage.`
+  },
+  {
+    q: "Using Lewin's Change Theory, describe how a county health department in Kenya could implement a new Community Health Worker (CHW) programme. Outline the activities in each stage and identify potential driving and restraining forces.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>Lewin's Change Theory provides a practical framework for implementing new health programmes. Applied to Kenya's devolved health system, it guides a county health department through introducing a Community Health Worker (CHW) programme.<br><br><strong>Force Field Analysis</strong><br><em>Driving Forces:</em> WHO evidence supporting CHW effectiveness; government policy (Kenya Health Policy 2014–2030); community demand for closer health services; donor funding availability; linkage to UHC goals.<br><em>Restraining Forces:</em> Limited county budget; existing staff resistance (fear of role dilution); community distrust of new cadres; inadequate training infrastructure; weak supervision systems.<br><br><strong>Stage 1: Unfreeze</strong><br>Activities: <ul><li>Present health outcome data showing unmet needs in the county (psychological disconfirmation)</li><li>Convene stakeholder meetings with health facility managers, community leaders, and county health management team</li><li>Communicate policy mandate and evidence base for CHW programmes</li><li>Address staff concerns through consultation (decrease restraining forces)</li><li>Secure budget allocation and donor commitment (increase driving forces)</li><li>Develop a shared vision and communication plan</li></ul><strong>Stage 2: Change (Movement)</strong><br>Activities: <ul><li>Recruit and train CHWs using standardized curriculum</li><li>Deploy CHWs to designated community units with defined roles</li><li>Establish supervision structures linking CHWs to facility-based staff</li><li>Implement referral pathways between CHWs and health facilities</li><li>Provide tools: registers, basic equipment, job aids, mobile health platforms</li><li>Monitor implementation and address emerging challenges promptly</li></ul><strong>Stage 3: Refreeze</strong><br>Activities: <ul><li>Integrate CHW programme into county annual work plan and budget</li><li>Establish formal CHW policy, terms of service, and incentive structure</li><li>Build CHW performance data into routine HMIS reporting</li><li>Conduct recognition events for high-performing CHWs</li><li>Mainstream CHW supervision into facility management responsibilities</li><li>Document and share successes to build county-wide culture of community health</li></ul><strong>Conclusion</strong><br>Lewin's framework ensures that the CHW programme is not merely launched but sustained. By systematically unfreezing resistance, implementing with support, and refreezing through policy and culture, the county health department can achieve lasting community health improvement aligned with Kenya's UHC goals.`
+  },
+  {
+    q: "Explain the Human Relations management approach in detail. Discuss how concepts from Maslow, McGregor, and Elton Mayo contribute to understanding healthcare worker motivation, and how this can improve health system performance.",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>The Human Relations approach, dominant from 1930–1970, represents a fundamental shift from task-oriented Classical theories toward recognizing the social, psychological, and emotional dimensions of work. In healthcare, where worker motivation is directly linked to patient outcomes, this approach is particularly significant.<br><br><strong>Elton Mayo and the Hawthorne Effect</strong><br>Mayo's Hawthorne Studies revealed that workers' productivity improved when they felt observed, valued, and included — irrespective of physical conditions. This demonstrated that attention, recognition, and social belonging powerfully influence performance. In healthcare, this means regular managerial attention, ward rounds with genuine staff engagement, and participative team meetings can boost clinical performance.<br><br><strong>Maslow's Hierarchy of Needs</strong><br>Maslow proposed a five-level hierarchy:<ul><li><strong>Physiological:</strong> Safe working conditions, adequate breaks, reasonable pay to meet basic needs.</li><li><strong>Safety:</strong> Job security, protection from occupational hazards, clear policies.</li><li><strong>Love/Belonging:</strong> Team cohesion, collegial relationships, inclusive workplace culture.</li><li><strong>Esteem:</strong> Recognition for good work, professional titles, awards, promotion.</li><li><strong>Self-Actualization:</strong> Research opportunities, leadership roles, complex clinical challenges.</li></ul>Healthcare managers who understand this hierarchy can tailor motivation strategies — ensuring basic needs are met before pursuing higher-order motivators.<br><br><strong>McGregor's Theory X and Theory Y</strong><br>Theory X managers (directive, controlling) assume staff dislike work and must be coerced. This approach is counterproductive in professional healthcare, where clinical judgment and intrinsic motivation are essential. Theory Y managers (participative, empowering) assume staff seek responsibility and can be creative. Evidence shows Theory Y environments produce higher staff engagement, lower turnover, and better patient care.<br><br><strong>Application to Health System Performance</strong><br>The Human Relations approach supports: patient-centred care models (recognizing staff as caring individuals, not just task-performers); team-based care (leveraging social motivation); retention strategies (addressing esteem and self-actualization); and leadership development (empowering clinical leaders to inspire their teams).<br><br><strong>Conclusion</strong><br>The Human Relations approach is not merely a historical theory — it is the foundation of contemporary people management in healthcare. By applying insights from Mayo, Maslow, and McGregor, health managers can build motivated, engaged workforces that deliver consistently high-quality, compassionate care.`
+  },
+  {
+    q: "Critically evaluate the role of management theories — from Classical to Contemporary — in shaping modern Health Systems Management. How should a health manager synthesize these theories to address current healthcare challenges?",
+    marks: 20,
+    ans: `<strong>Introduction</strong><br>Management theories have evolved across three broad eras: Classical (1900–1930s), Human Relations (1930–1970s), and Contemporary (1970s–present). Each era contributed frameworks that remain relevant to modern Health Systems Management, and no single theory is sufficient alone.<br><br><strong>Classical Theories: Contributions and Limits</strong><br>Scientific Management (Taylor) contributed standardization, time-efficiency, and process clarity — foundational for clinical protocols and hospital operations. However, its mechanistic view of workers is inappropriate for healthcare professionals requiring autonomy and judgment. Administrative Management (Fayol) provided organizational structure through principles like unity of command and esprit de corps — still reflected in hospital hierarchies. Bureaucratic Theory (Weber) contributed meritocracy, credentialing, and formal procedures essential for clinical safety and accountability.<br><br><strong>Human Relations Theory: Contributions and Limits</strong><br>This era recognized that worker motivation, social needs, and leadership style profoundly affect performance. Maslow's hierarchy, McGregor's Theory Y, and Mayo's Hawthorne findings all point to the importance of creating conditions where healthcare workers are intrinsically motivated. Limitation: may underplay the need for structure in high-risk clinical environments.<br><br><strong>Contemporary Theories</strong><br><ul><li><strong>Contingency Theory:</strong> Teaches health managers to adapt leadership style to situation — directive in emergencies, participative in quality improvement teams.</li><li><strong>Systems Theory:</strong> Underpins the WHO Building Blocks framework — health outcomes emerge from the interaction of all system components.</li><li><strong>Socio-Technical Approach:</strong> Critical for technology implementation (EHRs, telemedicine) — both technical and human factors must be designed together.</li><li><strong>Situational Leadership:</strong> Enables managers to flex style based on staff readiness and task complexity.</li></ul><strong>Synthesis for Modern Healthcare</strong><br>A modern health manager should: (1) Use Classical principles for operational structure, protocols, and accountability; (2) Apply Human Relations insights for staff motivation, retention, and team building; (3) Draw on Contingency Theory to adapt to diverse contexts; (4) Employ Systems Theory for holistic health planning; (5) Use Socio-Technical thinking for technology integration; (6) Apply Change Theory (Lewin/Kotter) for reform management.<br><br><strong>Conclusion</strong><br>No single management theory addresses all healthcare challenges. The most effective health managers are theoretically literate — able to selectively apply insights from multiple frameworks based on context. The evolution of management thinking is not a story of replacement but of accumulation, and contemporary HSM is richer for the contributions of every era.`
+  },
+];
+
+// ===================== RENDER MCQs =====================
+let answered = 0;
+let correct = 0;
+
+const mcqContainer = document.getElementById('mcq-container');
+
+mcqs.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  const letters = ['A','B','C','D'];
+  const optsHTML = item.opts.map((o, j) =>
+    `<div class="option" onclick="selectOption(this, ${i}, ${j})" data-idx="${j}">
+      <span class="opt-letter">${letters[j]}</span>
+      <span>${o}</span>
+    </div>`
+  ).join('');
+  card.innerHTML = `
+    <div class="q-header">
+      <span class="q-num">Q${i+1}</span>
+      <span class="q-text">${item.q}</span>
+    </div>
+    <div class="options" id="opts-${i}">${optsHTML}</div>
+    <div class="feedback" id="fb-${i}"></div>
+  `;
+  mcqContainer.appendChild(card);
+});
+
+function selectOption(el, qi, chosen) {
+  const container = document.getElementById(`opts-${qi}`);
+  if(container.querySelector('.correct, .wrong')) return; // already answered
+  const allOpts = container.querySelectorAll('.option');
+  const correctIdx = mcqs[qi].ans;
+  answered++;
+  updateProgress();
+  allOpts.forEach((opt, j) => {
+    opt.style.pointerEvents = 'none';
+    if(j === correctIdx && chosen !== correctIdx) opt.classList.add('show-correct');
+  });
+  const fb = document.getElementById(`fb-${qi}`);
+  if(chosen === correctIdx) {
+    el.classList.add('correct');
+    correct++;
+    fb.className = 'feedback correct';
+    fb.innerHTML = `✓ <strong>Correct!</strong> ${mcqs[qi].exp}`;
+  } else {
+    el.classList.add('wrong');
+    fb.className = 'feedback wrong';
+    fb.innerHTML = `✗ <strong>Incorrect.</strong> The correct answer is <strong>${['A','B','C','D'][correctIdx]}</strong>. ${mcqs[qi].exp}`;
+  }
+  document.getElementById('live-score').textContent = correct;
+}
+
+function updateProgress() {
+  const pct = (answered / 50) * 100;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-count').textContent = `${answered} / 50`;
+}
+
+// ===================== RENDER SHORT ANSWERS =====================
+const saContainer = document.getElementById('sa-container');
+shortAnswers.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'sa-card';
+  card.innerHTML = `
+    <div class="sa-header">
+      <span class="sa-num">SA ${i+1}</span>
+      <span class="sa-question">${item.q}</span>
+    </div>
+    <div class="sa-body">
+      <textarea class="sa-input" placeholder="Write your answer here…"></textarea>
+      <button class="reveal-btn" onclick="revealSA(${i})">Reveal Model Answer</button>
+      <div class="model-answer" id="sa-ans-${i}">
+        <div class="ma-label">Model Answer</div>
+        ${item.ans}
+      </div>
+    </div>
+  `;
+  saContainer.appendChild(card);
+});
+function revealSA(i) {
+  const el = document.getElementById(`sa-ans-${i}`);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+// ===================== RENDER LONG ANSWERS =====================
+const laContainer = document.getElementById('la-container');
+longAnswers.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'la-card';
+  card.innerHTML = `
+    <div class="la-header">
+      <span class="la-num">LA ${i+1}</span>
+      <div>
+        <div class="la-question">${item.q}</div>
+        <div class="la-meta">${item.marks} marks — Suggested response: 4–6 paragraphs</div>
+      </div>
+    </div>
+    <div class="la-body">
+      <textarea class="la-input" placeholder="Write your essay response here…"></textarea>
+      <button class="la-reveal-btn" onclick="revealLA(${i})">Reveal Model Answer</button>
+      <div class="la-model-answer" id="la-ans-${i}">
+        <div class="ma-label">Model Answer</div>
+        ${item.ans}
+      </div>
+    </div>
+  `;
+  laContainer.appendChild(card);
+});
+function revealLA(i) {
+  const el = document.getElementById(`la-ans-${i}`);
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+// ===================== RESULTS MODAL =====================
+function showResults() {
+  const pct = Math.round((correct / 50) * 100);
+  let grade, trophy;
+  if(pct >= 80) { grade = 'Distinction — Excellent work!'; trophy = '🏆'; }
+  else if(pct >= 60) { grade = 'Pass — Good effort!'; trophy = '🎓'; }
+  else { grade = 'Keep studying — You can do it!'; trophy = '📚'; }
+  document.getElementById('m-trophy').textContent = trophy;
+  document.getElementById('m-score').textContent = `${correct} / 50 (${pct}%)`;
+  document.getElementById('m-grade').textContent = grade;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+</script>
+</body>
+</html>
